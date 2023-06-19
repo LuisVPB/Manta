@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/sonda"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="40dp"
+        android:src="@drawable/sonda_v2"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--Posiciones-->
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.26"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.7347932"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.054719564"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.875513"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Medidores-->
+
+    <TextView
+        android:id="@+id/presSensor1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="P1: 43%"
+        android:text="P1: 43%"/>
+
+    <TextView
+        android:id="@+id/presSensor2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="110dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline1"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        tools:text="P2: 15%"
+        android:text="P2: 15%"/>
+
+    <TextView
+        android:id="@+id/presSensor3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="110dp"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        tools:text="P3: 20%"
+        android:text="P3: 20%"/>
+
+
+    <TextView
+        android:id="@+id/presSensor4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="135dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintEnd_toStartOf="@+id/guideline1"
+        android:text="P4: 10%"
+        tools:text="P4: 10%" />
+
+    <TextView
+        android:id="@+id/presSensor5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="135dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        android:text="P5: 5%"
+        tools:text="P5: 5%" />
+
+    <TextView
+        android:id="@+id/presSensor6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="P6: 0%"
+        android:text="P6: 0%"/>
+
+    <!-- Controle de flexión-->
+
+    <TextView
+        android:id="@+id/tvFlex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Flexion"
+        android:textColor="@color/black"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toTopOf="@+id/progressFlex"
+        app:layout_constraintEnd_toEndOf="@+id/progressFlex"
+        app:layout_constraintStart_toStartOf="@+id/progressFlex" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressFlex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:indeterminate="false"
+        android:progress="80"
+        app:indicatorColor="#B35B5B"
+        app:indicatorDirectionCircular="counterclockwise"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/guideline1"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        app:trackColor="@android:color/transparent"
+        tools:progress="80" />
+
+
+    <TextView
+        android:id="@+id/percentFlex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="80%"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/progressFlex"
+        app:layout_constraintEnd_toEndOf="@+id/progressFlex"
+        app:layout_constraintStart_toStartOf="@+id/progressFlex"
+        app:layout_constraintTop_toBottomOf="@+id/tvFlex"
+        tools:text="80º" />
+
+    <!-- Controles de Inclinación-->
+
+    <TextView
+        android:id="@+id/tvIncl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Inclinación"
+        android:textColor="@color/black"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toTopOf="@+id/progressIncl"
+        app:layout_constraintEnd_toEndOf="@+id/progressIncl"
+        app:layout_constraintStart_toStartOf="@+id/progressIncl" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressIncl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="170dp"
+        android:indeterminate="false"
+        android:progress="60"
+
+        app:indicatorColor="#B35B5B"
+        app:indicatorDirectionCircular="counterclockwise"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/guideline1"
+        app:trackColor="@android:color/transparent"
+        tools:progress="60" />
+
+
+    <TextView
+        android:id="@+id/percentIncl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="60%"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/progressIncl"
+        app:layout_constraintEnd_toEndOf="@+id/progressIncl"
+        app:layout_constraintStart_toStartOf="@+id/progressIncl"
+        app:layout_constraintTop_toBottomOf="@+id/tvIncl"
+        tools:text="60º" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:cardBackgroundColor="#6C6B6B"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="end">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/round_battery_4_bar_24"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="50%"
+                android:layout_marginEnd="20dp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/baseline_wifi_24"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="conected"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="20dp"/>
+
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
