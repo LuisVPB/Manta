@@ -1,4 +1,4 @@
-package com.example.sonda
+package com.blautic.sonda
 
 import org.junit.Test
 

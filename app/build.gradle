@@ -1,14 +1,15 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id("kotlin-parcelize")
 }
 
 android {
-    namespace 'com.example.sonda'
+    namespace 'com.blautic.sonda'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.sonda"
+        applicationId "com.blautic.sonda"
         minSdk 29
         targetSdk 33
         versionCode 1
@@ -34,6 +35,7 @@ android {
     viewBinding {
         enabled = true
     }
+
 }
 
 dependencies {
@@ -44,14 +46,16 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
-
     //navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
-
     //conexión con dispositivos bluetooth
     implementation("io.github.diegulog:ble-android:1.0.0")
+    // ViewBinding/DataBinding: debería bastar con ponerlo en "true" en la parte superior pero hay un error en el acceso del IDE y requiere añadirlo asi:
+    implementation 'com.android.databinding:viewbinding:4.0.1'
 
+    // Para ángulos:
+    implementation("uk.me.berndporr:iirj:1.3")
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -60,4 +64,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    // Para utiles:
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 }
