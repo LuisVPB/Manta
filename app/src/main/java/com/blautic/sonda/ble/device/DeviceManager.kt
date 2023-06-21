@@ -14,7 +14,6 @@ import com.diegulog.ble.gatt.HciStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
-import java.util.HashMap
 import java.util.Timer
 import java.util.TimerTask
 import java.util.UUID
@@ -43,23 +42,29 @@ class DeviceManager(private val context: Context, var typeDevice: TypeDevice = T
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     override fun onConnectionFailed(peripheral: BlePeripheral, status: HciStatus) {
-        Log.d("onConnectionFailed", "onConnectionFailed to ${peripheral.address}")
+        Log.d("estado", "onConnectionFailed to ${peripheral.address}")
         devices[peripheral.address]?.setConnectionState(ConnectionState.FAILED)
         autoConnect()
     }
 
     override fun onDisconnectedPeripheral(peripheral: BlePeripheral, status: HciStatus) {
-        Log.d("onDisconnectedPeripheral", "onConnectionFailed to ${peripheral.address}")
+        Log.d("estado", "onDisconnected to ${peripheral.address}")
         devices[peripheral.address]?.setConnectionState(ConnectionState.DISCONNECTED)
         autoConnect()
     }
 
     override fun onConnectedPeripheral(peripheral: BlePeripheral) {
-        super.onConnectedPeripheral(peripheral)
-
-        //TODO: enviar datos a pantalla
+        Log.d("estado", "onConnected to ${peripheral.address}")
+        autoConnect()
     }
-    
+
+    override fun onBluetoothAdapterStateChanged(state: Int) {
+        Log.d("estado", "adaptador bluetooth cambia su state a: $state")
+        if (state == BluetoothAdapter.STATE_ON) {
+            autoConnect()
+        }
+    }
+
     fun getDevices(): List<Device> {
         return devices.values.sortedBy { it.numDevice }
     }
@@ -83,9 +88,8 @@ class DeviceManager(private val context: Context, var typeDevice: TypeDevice = T
             throw IllegalArgumentException("$address is not a valid bluetooth address. Make sure all alphabetic characters are uppercase.")
         }
         Log.d("datos", "$address")
-        if (devices[address] == null) {
-            devices[address] = Device(numDevice = numDevice, address = address, typeDevice = typeDevice)
-        }
+        devices[address] = Device(numDevice = numDevice, address = address, typeDevice = typeDevice)
+
 
         getDevices(address)?.let {
             connect(it)
@@ -111,6 +115,8 @@ class DeviceManager(private val context: Context, var typeDevice: TypeDevice = T
                 }
             }
         }
+
+
     }
 
     private fun isConnected(device: Device): Boolean {
@@ -120,12 +126,12 @@ class DeviceManager(private val context: Context, var typeDevice: TypeDevice = T
     fun enableMpu(enable: Boolean) {
         val order = byteArrayOf(if (enable) ORDER_MPU else ORDER_IDLE)
         notify(typeDevice.UUID_MPU_CHARACTERISTIC, enable)
-        write(typeDevice.UUID_ORDER, order)
+        write(typeDevice.UUID_PRESION_CHARACTERISTIC, order)
     }       
 
     fun powerOff() {
         val order = byteArrayOf(ORDER_OFF)
-        write(typeDevice.UUID_ORDER, order)
+        write(typeDevice.UUID_PRESION_CHARACTERISTIC, order)
     }
 
     fun enableDeviceStatus(enable: Boolean) {

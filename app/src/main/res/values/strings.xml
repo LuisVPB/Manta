@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Sonda</string>
+    <string name="enable_gps">Please Enable Gps</string>
+    <string name="enable_bluetooth">Please Enable Bluetooth</string>
 </resources>

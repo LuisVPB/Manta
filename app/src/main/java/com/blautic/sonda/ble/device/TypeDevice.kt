@@ -5,16 +5,13 @@ enum class TypeDevice(
     val numElectrodes: Int,
     val groupedData: Int,
     val UUID_MPU_CHARACTERISTIC: String,
-    val UUID_ECG_CHARACTERISTIC: String,
     val UUID_STATUS_CHARACTERISTIC: String,
-    val UUID_ORDER :String,
-    val UUID_FW_VER_CHARACTERISTIC:String,
-    val MAC: String,
-    val UUID_CH_FR : String
+    val UUID_PRESION_CHARACTERISTIC: String,
+    val MAC: String
 ) {
-    PRESION(125.0,5, 9,
-        "0000ff04-0000-1000-8000-00805f9b34fb", "0000ff05-0000-1000-8000-00805f9b34fb",
-        "0000ff03-0000-1000-8000-00805f9b34fb", "0000ff02-0000-1000-8000-00805f9b34fb",
-        "0000ff01-0000-1000-8000-00805f9b34fb","12:12:12:12:12:12", "0000ff09-0000-1000-8000-00805f9b34fb"
+    PRESION(
+        125.0, 5, 9,
+        "0000ff3b-0000-1000-8000-00805f9b34fb", "0000ff3a-0000-1000-8000-00805f9b34fb",
+        "0000ff37-0000-1000-8000-00805f9b34fb", "77:77:77:77:77:77"
     )
 }

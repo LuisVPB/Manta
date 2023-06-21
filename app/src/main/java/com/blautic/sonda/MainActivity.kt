@@ -1,16 +1,30 @@
 package com.blautic.sonda
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.blautic.sonda.ble.device.DeviceManager
 import com.blautic.sonda.databinding.ActivityMainBinding
 import com.blautic.sonda.viewModel.MainViewModel
 import com.blautic.sonda.viewModel.MainViewModelFactory
+import com.diegulog.ble.gatt.ConnectionState
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.toList
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -20,9 +34,10 @@ class MainActivity : AppCompatActivity() {
     //Permisos:
     var PERMISSIONS_REQUIRED = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
-        //Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
     var PERMISSIONS_REQUEST_CODE = 10
+
     private val requestMultiplePermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             permissions.entries.forEach {
@@ -36,7 +51,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val arg1 = "Valor "
         val arg2 = 10 //por el momento hay dos argumentos genéricos
         mainViewModelFactory = MainViewModelFactory(DeviceManager(this), arg2)
         viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
@@ -49,5 +63,82 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        //checkBlePermissions()
+
+        binding.btConnect.setOnClickListener {
+            viewModel.deviceManager.connect(0, "77:77:77:77:77:77")
+
+
+            viewModel.deviceManager.getDevices().forEach { device ->
+                //Log.d("status sonda", "sonda estado: ${device.deviceStatusFlow.toList()}")
+                device.connectionStateFlow.onEach {connectionState ->
+                    if (connectionState == ConnectionState.CONNECTED){
+                        viewModel.deviceManager.enableDeviceStatus(true)
+                        viewModel.deviceManager.getDevices().onEach {
+                            viewModel.
+                        }
+                    }
+                }.launchIn(lifecycleScope)
+                //device.deviceStatusFlow.onEach {}
+            }
+
+
+        }
+
     }
+
+    private fun checkBlePermissions() : Boolean {
+        return if (viewModel.hasPermissions(this, PERMISSIONS_REQUIRED)) {
+            isBleAndGpsEnable()
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
+            false
+        }
+    }
+
+    private fun isBleAndGpsEnable(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !viewModel.checkGPSIsEnable(this)) {
+            MaterialAlertDialogBuilder(this)
+                .setMessage(R.string.enable_gps)
+                .setNegativeButton(
+                    android.R.string.cancel
+                ) { _, _ -> finish() }
+                .setPositiveButton(
+                    android.R.string.ok
+                ) { _, _ ->
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    startActivityForResult(intent, PERMISSIONS_REQUEST_CODE)
+                }
+                .setCancelable(false)
+                .show()
+            return false
+        }
+        if (!viewModel.isBluetoothOn) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.enable_bluetooth)
+                .setNegativeButton(
+                    android.R.string.cancel
+                ) { _, _ -> finish() }
+                .setPositiveButton(
+                    android.R.string.ok
+                ) { _, _ -> viewModel.enableBluetooth(this, 102) }
+                .setCancelable(false)
+                .show()
+            return false
+        }
+        return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            if (PackageManager.PERMISSION_GRANTED != grantResults[0]) {
+                finish()
+            }
+        }
+    }
+
 }
