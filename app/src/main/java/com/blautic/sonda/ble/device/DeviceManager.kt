@@ -1,6 +1,7 @@
 package com.blautic.sonda.ble.device
 
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -41,9 +42,18 @@ class DeviceManager(private val context: Context, var typeDevice: TypeDevice = T
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    override fun onDiscoveredPeripheral(peripheral: BlePeripheral, scanResult: ScanResult) {
+        Log.d("status", "Descubierto el dispositivo: ${peripheral.name}, con mac: ${peripheral.address}")
+    }
+
     override fun onConnectionFailed(peripheral: BlePeripheral, status: HciStatus) {
-        Log.d("estado", "onConnectionFailed to ${peripheral.address}")
+        Log.d("estado", "la conexión falló con disp. de mac: ${peripheral.address}")
         devices[peripheral.address]?.setConnectionState(ConnectionState.FAILED)
+        autoConnect()
+    }
+
+    override fun onConnectedPeripheral(peripheral: BlePeripheral) {
+        Log.d("estado", "se ha conectado el dispositivo con mac: ${peripheral.address}")
         autoConnect()
     }
 
@@ -53,10 +63,6 @@ class DeviceManager(private val context: Context, var typeDevice: TypeDevice = T
         autoConnect()
     }
 
-    override fun onConnectedPeripheral(peripheral: BlePeripheral) {
-        Log.d("estado", "onConnected to ${peripheral.address}")
-        autoConnect()
-    }
 
     override fun onBluetoothAdapterStateChanged(state: Int) {
         Log.d("estado", "adaptador bluetooth cambia su state a: $state")
@@ -115,8 +121,6 @@ class DeviceManager(private val context: Context, var typeDevice: TypeDevice = T
                 }
             }
         }
-
-
     }
 
     private fun isConnected(device: Device): Boolean {

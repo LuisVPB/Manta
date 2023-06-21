@@ -22,9 +22,11 @@ import com.blautic.sonda.viewModel.MainViewModel
 import com.blautic.sonda.viewModel.MainViewModelFactory
 import com.diegulog.ble.gatt.ConnectionState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -69,22 +71,19 @@ class MainActivity : AppCompatActivity() {
         //checkBlePermissions()
 
         binding.btConnect.setOnClickListener {
-            viewModel.deviceManager.connect(0, "77:77:77:77:77:77")
+            viewModel.deviceManager.apply {
 
+                //connect(0, "77:77:77:77:77:77")
+                getDevices("77:77:77:77:77:77")?.deviceStatusFlow?.let {
+                    lifecycleScope.launch {
 
-            viewModel.deviceManager.getDevices().forEach { device ->
-                //Log.d("status sonda", "sonda estado: ${device.deviceStatusFlow.toList()}")
-                device.connectionStateFlow.onEach {connectionState ->
-                    if (connectionState == ConnectionState.CONNECTED){
-                        viewModel.deviceManager.enableDeviceStatus(true)
-                        viewModel.deviceManager.getDevices().onEach {
-                            viewModel.
-                        }
+                        it.onEach {
+                            Log.d("status", "batería: ${it.battery} y operation mode: ${it.operationMode}")
+                        }.collect()
+
                     }
-                }.launchIn(lifecycleScope)
-                //device.deviceStatusFlow.onEach {}
+                }
             }
-
 
         }
 
