@@ -39,9 +39,6 @@ class Device(val numDevice: Int, val address: String, val typeDevice: TypeDevice
         _connectionStateFlow.value = ConnectionState.CONNECTED
         peripheral.requestConnectionPriority(ConnectionPriority.HIGH)
         peripheral.notifyingCharacteristics//
-
-
-
     }
 
     override fun onPhyUpdate(peripheral: BlePeripheral, txPhy: PhyType, rxPhy: PhyType, status: GattStatus) {
@@ -97,7 +94,5 @@ class Device(val numDevice: Int, val address: String, val typeDevice: TypeDevice
     fun setConnectionState(connectionSate: ConnectionState) {
         _connectionStateFlow.value = connectionSate
     }
-
-
 
 }

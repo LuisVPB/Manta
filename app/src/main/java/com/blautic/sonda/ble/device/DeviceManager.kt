@@ -24,12 +24,10 @@ import kotlin.concurrent.scheduleAtFixedRate
 class DeviceManager(private val context: Context, var typeDevice: TypeDevice = TypeDevice.PRESION): BleManagerCallback() {
 
     companion object {
-
         val UUID_SERVICE = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb")
         const val ORDER_IDLE: Byte = 0
         const val ORDER_MPU: Byte = 12
         const val ORDER_OFF: Byte = 20
-
     }
 
     private val bleManager: BleManager = BleManager(context, this, Handler(Looper.getMainLooper()))

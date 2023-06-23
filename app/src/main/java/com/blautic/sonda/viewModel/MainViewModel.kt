@@ -10,15 +10,31 @@ import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
+import com.blautic.sonda.ble.device.BleManager
 import com.blautic.sonda.ble.device.DeviceManager
 
 class MainViewModel(
     val deviceManager: DeviceManager,
-    arg2: Int
+    context: Context
 ): ViewModel() {
+
+    private var bleManager = BleManager(context = context)
+
+    fun connectionState() = bleManager.connectionStateFlow.asLiveData()
+    fun statusFlow() = bleManager.statusFlow
+    fun presionFlow() = bleManager.presionFlow
+    fun connect(mac: String) {
+        bleManager.connectToDevice(mac)
+    }
+
+    fun startScan(){
+        bleManager.startBleScan()
+    }
 
     val isBluetoothOn = deviceManager.isBluetoothOn()
 
+    // funciones de comprobación de permisos
     fun enableBluetooth(activity: Activity, requestCode: Int) {
         if (requestCode >= 0) {
             val adapter = BluetoothAdapter.getDefaultAdapter()
@@ -41,5 +57,6 @@ class MainViewModel(
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
+
 
 }

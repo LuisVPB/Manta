@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,7 @@ import com.blautic.sonda.viewModel.MainViewModel
 import com.blautic.sonda.viewModel.MainViewModelFactory
 import com.diegulog.ble.gatt.ConnectionState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -53,8 +55,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val arg2 = 10 //por el momento hay dos argumentos genéricos
-        mainViewModelFactory = MainViewModelFactory(DeviceManager(this), arg2)
+        mainViewModelFactory = MainViewModelFactory(DeviceManager(this), this)
         viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -71,25 +72,49 @@ class MainActivity : AppCompatActivity() {
         //checkBlePermissions()
 
         binding.btConnect.setOnClickListener {
-            viewModel.deviceManager.apply {
 
-                //connect(0, "77:77:77:77:77:77")
-                getDevices("77:77:77:77:77:77")?.deviceStatusFlow?.let {
-                    lifecycleScope.launch {
+            viewModel.connect("77:77:77:77:77:77")
 
-                        it.onEach {
-                            Log.d("status", "batería: ${it.battery} y operation mode: ${it.operationMode}")
-                        }.collect()
+        }
 
-                    }
-                }
+        lifecycleScope.launch {
+            viewModel.statusFlow().collect {
+                binding.battery.text = "${it ?: 0}"
             }
 
         }
 
+        lifecycleScope.launch {
+            viewModel.presionFlow().collect {
+                binding.presSensor1.text= "P1:${it?.get(0) ?: "sin valores"} %"
+            }
+        }
+
+
+        viewModel.connectionState().observeForever {
+            when(it){
+                ConnectionState.DISCONNECTED -> {
+                    binding.tvConexion.text = "disconnected"
+                    binding.ivConexion.setColorFilter(Color.parseColor("#CF1313"))
+                }
+                ConnectionState.CONNECTING -> {
+
+                }
+                ConnectionState.CONNECTED -> {
+                    binding.tvConexion.text = "connected"
+                    binding.ivConexion.setColorFilter(Color.parseColor("#4CAF50"))
+
+                }
+                ConnectionState.DISCONNECTING -> {
+
+                }
+                ConnectionState.FAILED -> {}
+
+            }
+        }
     }
 
-    private fun checkBlePermissions() : Boolean {
+    private fun checkBlePermissions(): Boolean {
         return if (viewModel.hasPermissions(this, PERMISSIONS_REQUIRED)) {
             isBleAndGpsEnable()
         } else {
@@ -131,7 +156,11 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (PackageManager.PERMISSION_GRANTED != grantResults[0]) {
