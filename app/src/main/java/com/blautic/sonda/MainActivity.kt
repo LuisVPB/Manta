@@ -86,7 +86,20 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.presionFlow().collect {
-                binding.presSensor1.text= "P1:${it?.get(0) ?: "sin valores"} %"
+                binding.apply {
+                    presSensor1.text= "P1:${it?.get(0) ?: "sin valores"} %"
+                    presSensor2.text= "P2:${it?.get(1) ?: "sin valores"} %"
+                    presSensor3.text= "P3:${it?.get(2) ?: "sin valores"} %"
+                    presSensor4.text= "P4:${it?.get(3) ?: "sin valores"} %"
+                    presSensor5.text= "P5:${it?.get(4) ?: "sin valores"} %"
+                    presSensor6.text= "P6:${it?.get(5) ?: "sin valores"} %"
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.mpuFlow().collect {
+
             }
         }
 
@@ -113,6 +126,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    //////////////////////////////////
 
     private fun checkBlePermissions(): Boolean {
         return if (viewModel.hasPermissions(this, PERMISSIONS_REQUIRED)) {

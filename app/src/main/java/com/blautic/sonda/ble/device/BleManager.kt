@@ -47,6 +47,10 @@ class BleManager(private var context: Context) {
     private val _presionFlow = MutableStateFlow<MutableList<Int?>?>(null)
     val presionFlow get() = _presionFlow.asStateFlow()
 
+    // Valores de MPU
+    private val _mpuFlow = MutableStateFlow<MutableList<Int?>?>(null)
+    val mpuFlow get() = _mpuFlow.asStateFlow()
+
     private var isConnected = false
     private var isConnecting = false
 
@@ -202,14 +206,34 @@ class BleManager(private var context: Context) {
                                 val combinedValue = ((byte1.toInt() and 0xFF) shl 8) or (byte2.toInt() and 0xFF)
                                 integers.add(combinedValue)
                             }
+                            // Actualizar la variable entera con el valor combinado
                             _presionFlow.value = integers
 
-                        // Actualizar la variable entera con el valor combinado
 
                     }
 
 
                     //ACTUALIZAR EL FLOW DE PRESIÓN
+                }
+
+                BleUUID.UUID_MPU_CHARACTERISTIC -> {
+                    Log.d("NOTIFICATION ${characteristic?.uuid}",
+                        "mpu = ${characteristic?.value.contentToString()}")
+
+                    characteristic?.let {
+
+                        val integers: MutableList<Int?> = mutableListOf()
+                        for (i in 0 until it.value.size step 2) {
+                            val bytePar = it.value[i]
+                            val byteImpar = it.value[i + 1]
+                            val combinedValue = ((byteImpar.toInt() and 0xFF) shl 8) or (bytePar.toInt() and 0xFF)
+                            integers.add(combinedValue)
+                        }
+                        // Actualizar la variable entera con el valor combinado
+                        _mpuFlow.value = integers
+
+                    }
+
                 }
 
             }
@@ -227,6 +251,11 @@ class BleManager(private var context: Context) {
 
             enableNotifications(gatt?.getService(BleUUID.UUID_SERVICE)
                 ?.getCharacteristic(BleUUID.UUID_PRESION_CHARACTERISTIC)!!, true)
+
+            enableNotifications(gatt?.getService(BleUUID.UUID_SERVICE)
+                ?.getCharacteristic(BleUUID.UUID_MPU_CHARACTERISTIC)!!, true)
+
+            ////////////////////////
 
           /*  enableNotifications(gattCharacteristic?.getService(BleUUID.UUID_SERVICE)
                 ?.getCharacteristic(BleUUID.UUID_SYSSTATE)!!, true)

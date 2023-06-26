@@ -24,6 +24,8 @@ class MainViewModel(
     fun connectionState() = bleManager.connectionStateFlow.asLiveData()
     fun statusFlow() = bleManager.statusFlow
     fun presionFlow() = bleManager.presionFlow
+    fun mpuFlow() = bleManager.mpuFlow
+
     fun connect(mac: String) {
         bleManager.connectToDevice(mac)
     }
