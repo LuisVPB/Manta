@@ -1,33 +1,20 @@
 package com.blautic.sonda
 
 import android.Manifest
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.LocationManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.blautic.sonda.ble.device.DeviceManager
 import com.blautic.sonda.databinding.ActivityMainBinding
 import com.blautic.sonda.viewModel.MainViewModel
 import com.blautic.sonda.viewModel.MainViewModelFactory
 import com.diegulog.ble.gatt.ConnectionState
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -55,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        mainViewModelFactory = MainViewModelFactory(DeviceManager(this), this)
+        mainViewModelFactory = MainViewModelFactory(this)
         viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -129,6 +116,7 @@ class MainActivity : AppCompatActivity() {
 
     //////////////////////////////////
 
+    /*
     private fun checkBlePermissions(): Boolean {
         return if (viewModel.hasPermissions(this, PERMISSIONS_REQUIRED)) {
             isBleAndGpsEnable()
@@ -137,8 +125,11 @@ class MainActivity : AppCompatActivity() {
             false
         }
     }
+     */
 
+    /*
     private fun isBleAndGpsEnable(): Boolean {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !viewModel.checkGPSIsEnable(this)) {
             MaterialAlertDialogBuilder(this)
                 .setMessage(R.string.enable_gps)
@@ -170,6 +161,8 @@ class MainActivity : AppCompatActivity() {
         }
         return true
     }
+
+     */
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

@@ -3,9 +3,8 @@ package com.blautic.sonda.viewModel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blautic.sonda.ble.device.DeviceManager
 
-class MainViewModelFactory(private val deviceManager: DeviceManager, private val context: Context) : ViewModelProvider.Factory {
+class MainViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
 
     /**
      * Creates a new instance of the given `Class`.
@@ -17,7 +16,7 @@ class MainViewModelFactory(private val deviceManager: DeviceManager, private val
      */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(deviceManager, context) as T
+            return MainViewModel(context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
