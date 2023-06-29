@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
+import android.widget.ProgressBar
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +16,10 @@ import com.blautic.sonda.databinding.ActivityMainBinding
 import com.blautic.sonda.viewModel.MainViewModel
 import com.blautic.sonda.viewModel.MainViewModelFactory
 import com.diegulog.ble.gatt.ConnectionState
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -86,7 +90,19 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.mpuFlow().collect {
+                //binding.progressFlex.progress =
+                //binding.progressIncl.progress =
+            }
+        }
 
+        lifecycleScope.launch {
+            viewModel.anglesFlow().collect {
+
+                binding.percentFlex.text = "${(it?.getOrNull(0)?.roundToInt()?.absoluteValue ?: -1)}º"
+                binding.percentIncl.text = "${(it?.getOrNull(1)?.roundToInt()?.absoluteValue ?: -1)}º"
+
+                binding.progressFlex.setPolarProgress(it?.getOrNull(0)?.roundToInt() ?: 0)
+                binding.progressIncl.setPolarProgress(it?.getOrNull(1)?.roundToInt() ?: 0)
             }
         }
 
@@ -112,6 +128,11 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    fun setProgress() {
+
+
     }
 
     //////////////////////////////////
@@ -177,4 +198,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+}
+
+private fun CircularProgressIndicator.setPolarProgress(value: Int) {
+    if (value < 0) {
+        indicatorDirection = CircularProgressIndicator.INDICATOR_DIRECTION_COUNTERCLOCKWISE
+    } else {
+        indicatorDirection = CircularProgressIndicator.INDICATOR_DIRECTION_CLOCKWISE
+    }
+    progress =  (value.absoluteValue * 100) / 180
 }

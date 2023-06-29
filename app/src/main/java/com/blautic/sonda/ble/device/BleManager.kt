@@ -7,6 +7,9 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.util.Log
+import com.blautic.sonda.ble.device.mpu.Angles
+import com.blautic.sonda.ble.device.mpu.Mpu
+import com.diegulog.ble.BleBytesParser
 import com.diegulog.ble.gatt.ConnectionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +19,7 @@ import java.util.*
 
 class BleManager(private var context: Context) {
 
-    var x = 0
+    private val accelerometer = Mpu()
 
     private val bluetoothAdapter: BluetoothAdapter by lazy(LazyThreadSafetyMode.NONE) {
         val bluetoothManager =
@@ -50,6 +53,10 @@ class BleManager(private var context: Context) {
     // Valores de MPU
     private val _mpuFlow = MutableStateFlow<MutableList<Int?>?>(null)
     val mpuFlow get() = _mpuFlow.asStateFlow()
+
+    // Ángulos asociados al MPU
+    private val _anglesFlow = MutableStateFlow<MutableList<Float?>?>(null)
+    val anglesFlow get() = _anglesFlow.asStateFlow()
 
     private var isConnected = false
     private var isConnecting = false
@@ -177,7 +184,6 @@ class BleManager(private var context: Context) {
                 BleUUID.UUID_STATUS_CHARACTERISTIC -> {
                     Log.d("NOTIFICATION ${characteristic?.uuid}",
                         "batería = ${characteristic?.value.contentToString()}")
-                    x++
 
                     characteristic?.let {
                         if (it.value.size >= 2) {
@@ -221,16 +227,36 @@ class BleManager(private var context: Context) {
                         "mpu = ${characteristic?.value.contentToString()}")
 
                     characteristic?.let {
+                        val valoresBytes: ByteArray = ByteArray(6)
+                        val mpuIntegers: MutableList<Int?> = mutableListOf()
+                        val anglesIntegers: MutableList<Float?> = mutableListOf()
 
-                        val integers: MutableList<Int?> = mutableListOf()
                         for (i in 0 until it.value.size step 2) {
                             val bytePar = it.value[i]
                             val byteImpar = it.value[i + 1]
                             val combinedValue = ((byteImpar.toInt() and 0xFF) shl 8) or (bytePar.toInt() and 0xFF)
-                            integers.add(combinedValue)
+                            mpuIntegers.add(combinedValue)
+
+                            valoresBytes.set(i ,byteImpar)
+                            valoresBytes.set(i+1 ,bytePar)
                         }
+
                         // Actualizar la variable entera con el valor combinado
-                        _mpuFlow.value = integers
+                        _mpuFlow.value = mpuIntegers
+
+                        val parse = BleBytesParser(it.value)
+                        accelerometer.setData(parse)
+                        Log.d("angulos_todos","angles: xy: ${accelerometer.angles.xy} ,xz: ${accelerometer.angles.xz} , zy: ${accelerometer.angles.zy}")
+                        anglesIntegers.apply {
+                            add(accelerometer.angles.xy)
+                            add(accelerometer.angles.zy)
+                        }
+
+                        // Actualiza la lista de angulos:
+                        _anglesFlow.value = anglesIntegers
+
+                        Log.d("NOTIFICATION ${characteristic?.uuid}",
+                            "angles = ${anglesIntegers}")
 
                     }
 

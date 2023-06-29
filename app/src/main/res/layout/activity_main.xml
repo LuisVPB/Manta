@@ -129,8 +129,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Flexion"
+        android:textStyle="bold"
         android:textColor="@color/black"
-        android:textSize="10sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/progressFlex"
         app:layout_constraintEnd_toEndOf="@+id/progressFlex"
         app:layout_constraintStart_toStartOf="@+id/progressFlex" />
@@ -141,28 +142,29 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="150dp"
         android:indeterminate="false"
-        android:progress="80"
+        android:progress="0"
+        android:max="200"
         app:indicatorColor="#B35B5B"
         app:indicatorDirectionCircular="counterclockwise"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline1"
         app:layout_constraintTop_toTopOf="@+id/guideline3"
         app:trackColor="@android:color/transparent"
-        tools:progress="80" />
+        tools:progress="180" />
 
 
     <TextView
         android:id="@+id/percentFlex"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="80%"
+        android:text="-"
         android:textColor="@color/black"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/progressFlex"
         app:layout_constraintEnd_toEndOf="@+id/progressFlex"
         app:layout_constraintStart_toStartOf="@+id/progressFlex"
         app:layout_constraintTop_toBottomOf="@+id/tvFlex"
-        tools:text="80º" />
+        tools:text="-" />
 
     <!-- Controles de Inclinación-->
 
@@ -171,8 +173,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Inclinación"
+        android:textStyle="bold"
         android:textColor="@color/black"
-        android:textSize="10sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/progressIncl"
         app:layout_constraintEnd_toEndOf="@+id/progressIncl"
         app:layout_constraintStart_toStartOf="@+id/progressIncl" />
@@ -183,29 +186,29 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="170dp"
         android:indeterminate="false"
-        android:progress="60"
-
+        android:progress="0"
+        android:max="200"
         app:indicatorColor="#B35B5B"
         app:indicatorDirectionCircular="counterclockwise"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline1"
         app:trackColor="@android:color/transparent"
-        tools:progress="60" />
+        tools:progress="180" />
 
 
     <TextView
         android:id="@+id/percentIncl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="60%"
+        android:text="-"
         android:textColor="@color/black"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/progressIncl"
         app:layout_constraintEnd_toEndOf="@+id/progressIncl"
         app:layout_constraintStart_toStartOf="@+id/progressIncl"
         app:layout_constraintTop_toBottomOf="@+id/tvIncl"
-        tools:text="60º" />
+        tools:text="-" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
