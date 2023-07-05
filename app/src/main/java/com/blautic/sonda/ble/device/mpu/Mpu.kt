@@ -31,7 +31,7 @@ data class Mpu(
 
     fun setData(parse: BleBytesParser) {
         if (parse.value.size >= 6) { //inicialmente en 8, no entraba
-            //sample = parse.getIntValue(FORMAT_UINT16).toLong()
+            //sample = parse.getIntValue(FORMAT_UINT16).toLong() //No requiere sample
             accX = parse.getIntValue(FORMAT_SINT16) * accScale;
             accY = parse.getIntValue(FORMAT_SINT16) * accScale;
             accZ = parse.getIntValue(FORMAT_SINT16) * accScale;
