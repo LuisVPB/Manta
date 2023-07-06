@@ -222,16 +222,13 @@ class BleManager(private var context: Context) {
                                 val byte1 = it.value[i]
                                 val byte2 = it.value[i + 1]
                                 val combinedValue = ((byte1.toInt() and 0xFF) shl 8) or (byte2.toInt() and 0xFF)
+                                // Actualizar la variable entera con el valor combinado
                                 integers.add(combinedValue)
                             }
-                            // Actualizar la variable entera con el valor combinado
+
+                            //ACTUALIZAR EL FLOW DE PRESIÓN
                             _presionFlow.value = integers
-
-
                     }
-
-
-                    //ACTUALIZAR EL FLOW DE PRESIÓN
                 }
 
                 BleUUID.UUID_MPU_CHARACTERISTIC -> {

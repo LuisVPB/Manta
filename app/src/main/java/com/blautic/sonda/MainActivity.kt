@@ -68,13 +68,16 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        // Mostrar estado de batería:
         lifecycleScope.launch {
             viewModel.statusFlow().collect {
-                binding.battery.text = "${it ?: 0}"
+                binding.ivBattery.setImageResource(viewModel.getBatteryLevelDrawable(it))
+                binding.tvBattery.text = "${it ?: -1}"
             }
 
         }
 
+        // Mostrar valores de sensores de presión:
         lifecycleScope.launch {
             viewModel.presionFlow().collect {
                 binding.apply {
@@ -90,11 +93,11 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.mpuFlow().collect {
-                //binding.progressFlex.progress =
-                //binding.progressIncl.progress =
+
             }
         }
 
+        // Mostrar valores de angulos:
         lifecycleScope.launch {
             viewModel.anglesFlow().collect {
 

@@ -4,6 +4,7 @@ package com.blautic.sonda.viewModel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import com.blautic.sonda.R
 import com.blautic.sonda.ble.device.BleManager
 
 class MainViewModel(
@@ -26,6 +27,16 @@ class MainViewModel(
         bleManager.startBleScan()
     }
 
+    fun getBatteryLevelDrawable(level: Int?): Int {
+        return when {
+            level == null -> R.drawable.ic_battery_unknown
+            level in 0..25 -> R.drawable.ic_battery_1
+            level in 26..50 -> R.drawable.ic_battery_3
+            level in 51..75 -> R.drawable.ic_battery_5
+            level in 76..100 -> R.drawable.ic_battery_full
+            else -> R.drawable.ic_battery_alert
+        }
+    }
 
 
     // funciones de comprobación de permisos
