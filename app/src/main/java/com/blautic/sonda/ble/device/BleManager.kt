@@ -84,7 +84,6 @@ class BleManager(private var context: Context) {
         }
     }
 
-
     /*
     * Conecta Con un dispositivo de electroestimulación pasándole la dirección MAC
     */
@@ -190,20 +189,20 @@ class BleManager(private var context: Context) {
                     Log.d("NOTIFICATION ${characteristic?.uuid}",
                         "status = ${characteristic?.value.contentToString()}")
 
-                    setData(parse)
-
                     characteristic?.let {
                         if (it.value.size >= 2) {
                             it.value.apply {
                                 val combinedValue = ((this[1].toInt() and 0xFF) shl 8) or (this[0].toInt() and 0xFF)
 
+                                setPowerVal(combinedValue)
+
                                 // Actualizar la variable entera con el valor combinado
-                                _statusFlow.value = combinedValue
+                                _statusFlow.value = battery
 
                                 Log.d("NOTIFICATION ${characteristic?.uuid}",
-                                    "batería = $battery")
+                                    "batería transformada= $battery")
                                 Log.d("NOTIFICATION ${characteristic?.uuid}",
-                                    "batería2 = $combinedValue")
+                                    "batería bruto = $combinedValue")
                             }
                         }
                     }
@@ -360,13 +359,13 @@ class BleManager(private var context: Context) {
     private var lasAdcBat = 0
     private val avgBat: MutableList<Int> = ArrayList()
     private var battery = 0
-    private var operationMode = 0
 
-    fun setData(parse: BleBytesParser) {
-        operationMode = parse.getIntValue(BleBytesParser.FORMAT_UINT8)
+    // Ya se obtiene el valorde adc directamente, no hace falta para la función setPowerVal()
+    /*fun setData(parse: BleBytesParser) {
         val adc = parse.getIntValue(BleBytesParser.FORMAT_UINT16)
         setPowerVal(adc)
-    }
+    }*/
+
     private fun setPowerVal(adc: Int) {
         if (adc > 0 && adc != lasAdcBat) {
             lasAdcBat = adc

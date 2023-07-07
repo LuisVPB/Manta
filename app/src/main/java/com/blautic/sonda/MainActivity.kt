@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
+        // Mostrar estado de conexión:
         viewModel.connectionState().observeForever {
             when(it){
                 ConnectionState.DISCONNECTED -> {
@@ -131,11 +131,6 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-    }
-
-    fun setProgress() {
-
-
     }
 
     //////////////////////////////////
@@ -202,6 +197,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
+
+    //////////////////////////////////////
 
 private fun CircularProgressIndicator.setPolarProgress(value: Int) {
     if (value < 0) {
