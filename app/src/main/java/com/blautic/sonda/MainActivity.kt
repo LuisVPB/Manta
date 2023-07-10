@@ -18,6 +18,8 @@ import com.blautic.sonda.viewModel.MainViewModelFactory
 import com.diegulog.ble.gatt.ConnectionState
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.launch
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
@@ -72,21 +74,22 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.statusFlow().collect {
                 binding.ivBattery.setImageResource(viewModel.getBatteryLevelDrawable(it))
-                binding.tvBattery.text = "${it ?: -1}"
+                binding.tvBattery.text = "${it}"
             }
 
         }
 
         // Mostrar valores de sensores de presión:
         lifecycleScope.launch {
+
             viewModel.presionFlow().collect {
                 binding.apply {
-                    presSensor1.text= "P1:${it?.get(0) ?: "sin valores"} %"
-                    presSensor2.text= "P2:${it?.get(1) ?: "sin valores"} %"
-                    presSensor3.text= "P3:${it?.get(2) ?: "sin valores"} %"
-                    presSensor4.text= "P4:${it?.get(3) ?: "sin valores"} %"
-                    presSensor5.text= "P5:${it?.get(4) ?: "sin valores"} %"
-                    presSensor6.text= "P6:${it?.get(5) ?: "sin valores"} %"
+                    presSensor1.text= "P1:${String.format("%.1f", it?.get(0))} %"
+                    presSensor2.text= "P2:${String.format("%.1f", it?.get(1))} %"
+                    presSensor3.text= "P3:${String.format("%.1f", it?.get(2))} %"
+                    presSensor4.text= "P4:${String.format("%.1f", it?.get(3))} %"
+                    presSensor5.text= "P5:${String.format("%.1f", it?.get(4))} %"
+                    presSensor6.text= "P6:${String.format("%.1f", it?.get(5))} %"
                 }
             }
         }
@@ -127,7 +130,10 @@ class MainActivity : AppCompatActivity() {
                 ConnectionState.DISCONNECTING -> {
 
                 }
-                ConnectionState.FAILED -> {}
+                ConnectionState.FAILED -> {
+                    binding.tvConexion.text = "disconnected"
+                    binding.ivConexion.setColorFilter(Color.parseColor("#CF1313"))
+                }
 
             }
         }

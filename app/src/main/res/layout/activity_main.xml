@@ -253,6 +253,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="50%"
+                android:textColor="@color/white"
                 android:layout_marginEnd="20dp"/>
 
             <ImageView
@@ -268,6 +269,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="disconected"
+                android:textColor="@color/white"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="20dp"/>
 

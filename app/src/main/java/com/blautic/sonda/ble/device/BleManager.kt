@@ -7,7 +7,6 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.util.Log
-import com.blautic.sonda.ble.device.mpu.Angles
 import com.blautic.sonda.ble.device.mpu.Mpu
 import com.diegulog.ble.BleBytesParser
 import com.diegulog.ble.gatt.ConnectionState
@@ -47,7 +46,7 @@ class BleManager(private var context: Context) {
     val statusFlow get() = _statusFlow.asStateFlow()
 
     // Valores Presion
-    private val _presionFlow = MutableStateFlow<MutableList<Int?>?>(null)
+    private val _presionFlow = MutableStateFlow<MutableList<Float?>?>(null)
     val presionFlow get() = _presionFlow.asStateFlow()
 
     // Valores de MPU
@@ -111,7 +110,9 @@ class BleManager(private var context: Context) {
         @SuppressLint("MissingPermission")
 
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-            Log.w("BluetoothGattCallback", "onConnectionStateChange $status")
+            Log.w("BluetoothGattCallback", "onConnectionStateChange status: $status")
+            Log.w("BluetoothGattCallback", "onConnectionStateChange newState: $newState")
+
             super.onConnectionStateChange(gatt, status, newState)
 
             val deviceAddress = gatt?.device?.address
@@ -212,21 +213,28 @@ class BleManager(private var context: Context) {
 
                 BleUUID.UUID_PRESION_CHARACTERISTIC -> {
                     Log.d("NOTIFICATION ${characteristic?.uuid}",
-                        "presión = ${characteristic?.value.contentToString()}")
+                        "presión crudo = ${characteristic?.value.contentToString()}")
 
                     characteristic?.let {
 
-                            val integers: MutableList<Int?> = mutableListOf()
+                            val floats: MutableList<Float?> = mutableListOf()
                             for (i in 0 until it.value.size step 2) {
                                 val byte1 = it.value[i]
                                 val byte2 = it.value[i + 1]
-                                val combinedValue = ((byte1.toInt() and 0xFF) shl 8) or (byte2.toInt() and 0xFF)
+                                val combinedValue = ((byte2.toInt() and 0xFF) shl 8) or (byte1.toInt() and 0xFF)
+
+                                // Normaliza el valor raw recibido:
+                                val normVal = normalization(combinedValue)
+
                                 // Actualizar la variable entera con el valor combinado
-                                integers.add(combinedValue)
+                                floats.add(normVal)
                             }
 
+                        Log.d("NOTIFICATION ${characteristic?.uuid}",
+                            "presión normal = ${floats.toString()}")
+
                             //ACTUALIZAR EL FLOW DE PRESIÓN
-                            _presionFlow.value = integers
+                            _presionFlow.value = floats
                     }
                 }
 
@@ -249,14 +257,16 @@ class BleManager(private var context: Context) {
                             valoresBytes.set(i+1 ,bytePar)
                         }
 
+                        Log.d("NOTIFICATION mpu", valoresBytes.toString())
+
                         // Actualizar la variable entera con el valor combinado
                         _mpuFlow.value = mpuIntegers
 
                         val parse = BleBytesParser(it.value)
                         accelerometer.setData(parse)
-                        Log.d("angulos_todos","angles: xy: ${accelerometer.angles.xy} ,xz: ${accelerometer.angles.xz} , zy: ${accelerometer.angles.zy}")
+                        Log.d("angulos_todos","angles: xy: ${Integer.toHexString(accelerometer.angles.xy.toInt())} ,xz: ${Integer.toHexString(accelerometer.angles.xz.toInt())} , zy: ${Integer.toHexString(accelerometer.angles.zy.toInt()) }")
                         anglesIntegers.apply {
-                            add(accelerometer.angles.xy)
+                            add(accelerometer.angles.xz)
                             add(accelerometer.angles.zy)
                         }
 
@@ -329,6 +339,13 @@ class BleManager(private var context: Context) {
         ) {
             super.onCharacteristicRead(gatt, characteristic, status)
         }
+    }
+
+    private fun normalization(combinedValue: Int): Float {
+        Log.d("NOTIFICATION", "val presion convinado $combinedValue")
+        val min = 1950
+        val result: Float = ((min-combinedValue)/min.toFloat()) //Porcentaje = ((1950 - Valor) / 1950) * 100
+        return  if(result >=0) result * 100 else 0F
     }
 
     @SuppressLint("MissingPermission")

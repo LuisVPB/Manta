@@ -24,7 +24,7 @@ data class Mpu(
     var angles: Angles = Angles(false)
 
     @Transient
-    private val accScale = AccScale.ACC_SCALE_4G.ratio
+    private val accScale = AccScale.ACC_SCALE_2G.ratio
 
     @Transient
     private val gyrScale: Float = GyrScale.GYR_SCALE_1000.ratio

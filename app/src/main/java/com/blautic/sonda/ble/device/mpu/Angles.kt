@@ -1,5 +1,6 @@
 package com.blautic.sonda.ble.device.mpu
 
+import android.util.Log
 import uk.me.berndporr.iirj.Butterworth
 import kotlin.math.*
 
@@ -35,7 +36,7 @@ data class Angles(
         val accY: Float = if (enableFilter) lowpassB.filter(y.toDouble()).toFloat() else y
         val accZ: Float = if (enableFilter) lowpassC.filter(z.toDouble()).toFloat() else z
         xy = getAngles(accX, accY) - offsetXy
-        zy = getAngles(accZ, accY) - offsetZy
+        zy = getAngles(accY, accZ) - offsetZy
         xz = getAngles(accX, accZ) - offsetXz
         setValueAvg()
         setValueMin()
@@ -49,7 +50,7 @@ data class Angles(
         val accY: Float = if (enableFilter) lowpassB.filter(y.toDouble()).toFloat() else y
         val accZ: Float = if (enableFilter) lowpassC.filter(z.toDouble()).toFloat() else z
         xy = (getAngles(accX, accY) - offsetXy)
-        zy = (getAngles(accZ, accY) - offsetZy)
+        zy = (getAngles(accY, accZ) - offsetZy)
         xz = (getAngles(accX, accZ) - offsetXz)
         setValueAvg()
         setValueMin()
@@ -57,11 +58,17 @@ data class Angles(
     }
 
     private fun getAngles(a: Float, b: Float): Float {
+
+
+
         return if (abs(a) < 0.1 && abs(b) < 0.1) 0f
         else {
             val rad3 = atan2(a, b)
-            ((rad3 * 180) / PI).toFloat()
+            val result = ((rad3 * 180) / PI).toFloat()
+            Log.d("valAnglos", "$a / $b / $rad3")
+            return result
         }
+
     }
 
     fun setOffset(enable: Boolean) {
