@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.statusFlow().collect {
                 binding.ivBattery.setImageResource(viewModel.getBatteryLevelDrawable(it))
-                binding.tvBattery.text = "${it}"
+                binding.tvBattery.text = "${it?:""}"
             }
 
         }
@@ -84,12 +84,12 @@ class MainActivity : AppCompatActivity() {
 
             viewModel.presionFlow().collect {
                 binding.apply {
-                    presSensor1.text= "P1:${String.format("%.1f", it?.get(0))} %"
-                    presSensor2.text= "P2:${String.format("%.1f", it?.get(1))} %"
-                    presSensor3.text= "P3:${String.format("%.1f", it?.get(2))} %"
-                    presSensor4.text= "P4:${String.format("%.1f", it?.get(3))} %"
-                    presSensor5.text= "P5:${String.format("%.1f", it?.get(4))} %"
-                    presSensor6.text= "P6:${String.format("%.1f", it?.get(5))} %"
+                    presSensor1.text= "P1: ${String.format("%.1f", it?.get(0)?: 0F)} %"
+                    presSensor2.text= "P2: ${String.format("%.1f", it?.get(1)?: 0F)} %"
+                    presSensor3.text= "P3: ${String.format("%.1f", it?.get(2)?: 0F)} %"
+                    presSensor4.text= "P4: ${String.format("%.1f", it?.get(3)?: 0F)} %"
+                    presSensor5.text= "P5: ${String.format("%.1f", it?.get(4)?: 0F)} %"
+                    presSensor6.text= "P6: ${String.format("%.1f", it?.get(5)?: 0F)} %"
                 }
             }
         }
@@ -104,8 +104,8 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.anglesFlow().collect {
 
-                binding.percentFlex.text = "${(it?.getOrNull(0)?.roundToInt()?.absoluteValue ?: -1)}º"
-                binding.percentIncl.text = "${(it?.getOrNull(1)?.roundToInt()?.absoluteValue ?: -1)}º"
+                binding.percentFlex.text = "${(it?.getOrNull(0)?.roundToInt()?.absoluteValue ?: 0)}º"
+                binding.percentIncl.text = "${(it?.getOrNull(1)?.roundToInt()?.absoluteValue ?: 0)}º"
 
                 binding.progressFlex.setPolarProgress(it?.getOrNull(0)?.roundToInt() ?: 0)
                 binding.progressIncl.setPolarProgress(it?.getOrNull(1)?.roundToInt() ?: 0)
