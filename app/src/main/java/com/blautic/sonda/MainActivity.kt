@@ -8,8 +8,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.blautic.sonda.databinding.ActivityMainBinding
@@ -65,9 +67,9 @@ class MainActivity : AppCompatActivity() {
         //checkBlePermissions()
 
         binding.btConnect.setOnClickListener {
-
-            viewModel.connect("77:77:77:77:77:77")
-
+            var estadoConex = viewModel.conected
+            if(estadoConex) viewModel.disconnect("77:77:77:77:77:77")
+            else viewModel.connect("77:77:77:77:77:77")
         }
 
         // Mostrar estado de batería:
@@ -114,18 +116,25 @@ class MainActivity : AppCompatActivity() {
 
         // Mostrar estado de conexión:
         viewModel.connectionState().observeForever {
+            var estado = it
+            binding.progressConnection.isVisible = it == ConnectionState.CONNECTING
+            binding.tvConectando.isVisible = it == ConnectionState.CONNECTING
+
             when(it){
                 ConnectionState.DISCONNECTED -> {
                     binding.tvConexion.text = "disconnected"
                     binding.ivConexion.setColorFilter(Color.parseColor("#CF1313"))
+                    binding.ivBattery.setImageResource(viewModel.getBatteryLevelDrawable(null))
+                    binding.btConnect.text = "Conectar"
+                    binding.tvBattery.text = ""
                 }
                 ConnectionState.CONNECTING -> {
-
+                    Log.i("conexion","conectando......")
                 }
                 ConnectionState.CONNECTED -> {
                     binding.tvConexion.text = "connected"
                     binding.ivConexion.setColorFilter(Color.parseColor("#4CAF50"))
-
+                    binding.btConnect.text = "Desconectar"
                 }
                 ConnectionState.DISCONNECTING -> {
 
@@ -133,6 +142,9 @@ class MainActivity : AppCompatActivity() {
                 ConnectionState.FAILED -> {
                     binding.tvConexion.text = "disconnected"
                     binding.ivConexion.setColorFilter(Color.parseColor("#CF1313"))
+                    binding.btConnect.text = "Conectar"
+                    binding.tvBattery.text = ""
+                    Toast.makeText(this, "se ha perdido la conexión con el dispositivo", Toast.LENGTH_LONG).show()
                 }
 
             }

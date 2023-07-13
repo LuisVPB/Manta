@@ -19,6 +19,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/aitex_textile_research_institute_vector_logo"
+        app:layout_constraintEnd_toStartOf="@+id/guideline1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <!--Posiciones-->
 
     <androidx.constraintlayout.widget.Guideline
@@ -94,7 +104,6 @@
         app:layout_constraintTop_toTopOf="@+id/guideline3"
         tools:text="P3: 20%" />
 
-
     <TextView
         android:id="@+id/presSensor4"
         android:layout_width="wrap_content"
@@ -132,7 +141,7 @@
         tools:text="P6: 0%"
         android:text="P6: 0%"/>
 
-    <!-- Controle de flexión-->
+    <!-- Control de flexión-->
 
     <TextView
         android:id="@+id/tvFlex"
@@ -176,7 +185,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvFlex"
         tools:text="-" />
 
-    <!-- Controles de Inclinación-->
+    <!-- Control de Inclinación-->
 
     <TextView
         android:id="@+id/tvIncl"
@@ -277,6 +286,37 @@
 
 
     </androidx.cardview.widget.CardView>
+
+    <!-- Control de conexión-->
+
+    <TextView
+        android:id="@+id/tvConectando"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Conectando..."
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/progressConnection"
+        app:layout_constraintEnd_toEndOf="@+id/progressConnection"
+        app:layout_constraintStart_toStartOf="@+id/progressConnection" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressConnection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:trackColor="#00CCCC"
+        tools:progress="50"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.43" />
 
 
 

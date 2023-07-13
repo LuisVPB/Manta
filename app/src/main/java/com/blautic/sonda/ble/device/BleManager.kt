@@ -6,7 +6,9 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.core.app.ActivityCompat.startActivityForResult
 import com.blautic.sonda.ble.device.mpu.Mpu
 import com.diegulog.ble.BleBytesParser
 import com.diegulog.ble.gatt.ConnectionState
@@ -20,7 +22,7 @@ class BleManager(private var context: Context) {
 
     private val accelerometer = Mpu()
 
-    private val bluetoothAdapter: BluetoothAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
         val bluetoothManager =
             context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothManager.adapter
@@ -30,7 +32,7 @@ class BleManager(private var context: Context) {
         ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
 
     private val bleScanner by lazy {
-        bluetoothAdapter.bluetoothLeScanner
+        bluetoothAdapter?.bluetoothLeScanner
     }
 
     //SCAN RESULT
@@ -57,7 +59,7 @@ class BleManager(private var context: Context) {
     private val _anglesFlow = MutableStateFlow<MutableList<Float?>?>(null)
     val anglesFlow get() = _anglesFlow.asStateFlow()
 
-    private var isConnected = false
+    var isConnected = false
     private var isConnecting = false
 
     private var gattCharacteristic: BluetoothGatt? = null
@@ -84,15 +86,27 @@ class BleManager(private var context: Context) {
     }
 
     /*
-    * Conecta Con un dispositivo de electroestimulación pasándole la dirección MAC
+    * Conecta Con el dispositivo pasándole la dirección MAC
     */
     @SuppressLint("MissingPermission")
     fun connectToDevice(address: String) {
-        val device: BluetoothDevice? = bluetoothAdapter.getRemoteDevice(address)
+        val device: BluetoothDevice? = bluetoothAdapter?.getRemoteDevice(address)
         if (bleAdapterIsEnable() && !isConnected && !isConnecting) {
             isConnecting = true
+            _connectionStateFlow.value = ConnectionState.CONNECTING
             gattCharacteristic =
-                device?.connectGatt(context, false, gattCallBack, BluetoothDevice.TRANSPORT_LE)
+                device?.connectGatt(context, true, gattCallBack, BluetoothDevice.TRANSPORT_LE)
+        } else if (!bleAdapterIsEnable()){
+            /*
+            // Ensures Bluetooth is available on the device and it is enabled. If not,
+            // displays a dialog requesting user permission to enable Bluetooth.
+            bluetoothAdapter?.takeIf {
+                !it.isEnabled }?.apply {
+                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+            }
+
+             */
         }
     }
 
@@ -110,15 +124,58 @@ class BleManager(private var context: Context) {
         @SuppressLint("MissingPermission")
 
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-            Log.w("BluetoothGattCallback", "onConnectionStateChange status: $status")
-            Log.w("BluetoothGattCallback", "onConnectionStateChange newState: $newState")
+            //super.onConnectionStateChange(gatt, status, newState)
 
-            super.onConnectionStateChange(gatt, status, newState)
+            Log.i("BluetoothGattCallback", "onConnectionStateChange status: $status")
+            Log.i("BluetoothGattCallback", "onConnectionStateChange newState: $newState")
 
             val deviceAddress = gatt?.device?.address
             _scanResultFlow.value = null
 
+            when (newState) {
+                BluetoothProfile.STATE_CONNECTED -> {
+
+                    Timber.tag("BluetoothGattCallback")
+                        .w("Successfully connected to %s", deviceAddress)
+
+                    _connectionStateFlow.value = ConnectionState.CONNECTED
+
+                    isConnecting = false
+                    isConnected = true
+                    gatt?.discoverServices()
+                }
+                BluetoothProfile.STATE_DISCONNECTED -> {
+                    Timber.tag("BluetoothGattCallback")
+                        .w("Successfully disconnected from %s", deviceAddress)
+
+                    _connectionStateFlow.value = ConnectionState.DISCONNECTED
+
+                    isConnected = false
+                    isConnecting = false
+                    gatt?.close()
+                }
+                BluetoothProfile.STATE_CONNECTING -> {
+                    Timber.tag("BluetoothGattCallback")
+                        .w("Successfully CONNECTING to %s", deviceAddress)
+
+                    _connectionStateFlow.value = ConnectionState.CONNECTING
+
+                    isConnected = false
+                    isConnecting = true
+                }
+                BluetoothProfile.STATE_DISCONNECTING -> {
+                    Timber.tag("BluetoothGattCallback")
+                        .w("Successfully DISCONNECTING to %s", deviceAddress)
+
+                    _connectionStateFlow.value = ConnectionState.DISCONNECTING
+
+                    isConnected = false
+                    isConnecting = false
+                }
+            }
+
             if (status == BluetoothGatt.GATT_SUCCESS) {
+                /*
                 when (newState) {
                     BluetoothProfile.STATE_CONNECTED -> {
 
@@ -143,7 +200,7 @@ class BleManager(private var context: Context) {
                     }
                     BluetoothProfile.STATE_CONNECTING -> {
                         Timber.tag("BluetoothGattCallback")
-                            .w("Successfully STATE_DISCONNECTED to %s", deviceAddress)
+                            .w("Successfully CONNECTING to %s", deviceAddress)
 
                         _connectionStateFlow.value = ConnectionState.CONNECTING
 
@@ -152,7 +209,7 @@ class BleManager(private var context: Context) {
                     }
                     BluetoothProfile.STATE_DISCONNECTING -> {
                         Timber.tag("BluetoothGattCallback")
-                            .w("Successfully STATE_DISCONNECTING to %s", deviceAddress)
+                            .w("Successfully DISCONNECTING to %s", deviceAddress)
 
                         _connectionStateFlow.value = ConnectionState.DISCONNECTING
 
@@ -160,6 +217,9 @@ class BleManager(private var context: Context) {
                         isConnecting = false
                     }
                 }
+
+                 */
+
             } else {
                 Timber.tag("BluetoothGattCallback").w("%s! Disconnecting...",
                     "Error " + status + " encountered for " + deviceAddress)
@@ -299,16 +359,6 @@ class BleManager(private var context: Context) {
             enableNotifications(gatt?.getService(BleUUID.UUID_SERVICE)
                 ?.getCharacteristic(BleUUID.UUID_MPU_CHARACTERISTIC)!!, true)
 
-            ////////////////////////
-
-          /*  enableNotifications(gattCharacteristic?.getService(BleUUID.UUID_SERVICE)
-                ?.getCharacteristic(BleUUID.UUID_SYSSTATE)!!, true)
-
-            enableNotifications(gattCharacteristic?.getService(BleUUID.UUID_SERVICE)
-                ?.getCharacteristic(BleUUID.UUID_BATT)!!, true)
-
-            enableNotifications(gattCharacteristic?.getService(BleUUID.UUID_SERVICE)
-                ?.getCharacteristic(BleUUID.UUID_STATUS)!!, true)*/
 
             isConnected = true
 
@@ -350,16 +400,16 @@ class BleManager(private var context: Context) {
 
     @SuppressLint("MissingPermission")
     fun startBleScan() {
-        bleScanner.startScan(null, scanSettings, scanCallback)
+        bleScanner?.startScan(null, scanSettings, scanCallback)
     }
 
     @SuppressLint("MissingPermission")
     fun stopBleScan() {
-        bleScanner.stopScan(scanCallback)
+        bleScanner?.stopScan(scanCallback)
     }
 
     private fun bleAdapterIsEnable(): Boolean {
-        return bluetoothAdapter.isEnabled
+        return bluetoothAdapter?.isEnabled ?: false
     }
 
     @SuppressLint("MissingPermission")

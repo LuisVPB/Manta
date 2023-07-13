@@ -13,6 +13,9 @@ class MainViewModel(
 
     private var bleManager = BleManager(context = context)
 
+    var conected = false
+        get() =  bleManager.isConnected
+
     fun connectionState() = bleManager.connectionStateFlow.asLiveData()
     fun statusFlow() = bleManager.statusFlow
     fun presionFlow() = bleManager.presionFlow
@@ -21,6 +24,10 @@ class MainViewModel(
 
     fun connect(mac: String) {
         bleManager.connectToDevice(mac)
+    }
+
+    fun disconnect(mac: String) {
+        bleManager.disconnect()
     }
 
     fun startScan(){
