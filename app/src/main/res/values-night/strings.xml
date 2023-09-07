@@ -1,7 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sonda</string>
-    <string name="enable_gps">Please Enable Gps</string>
-    <string name="enable_bluetooth">Please Enable Bluetooth</string>
     <string name="flexion">Flexión</string>
     <string name="inclinacion">Inclinación</string>
     <string name="conectando">Conectando...</string>

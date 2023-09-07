@@ -7,17 +7,33 @@
     android:layout_height="match_parent"
     tools:context="com.blautic.sonda.MainActivity">
 
-    <ImageView
-        android:id="@+id/sonda"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:padding="40dp"
-        android:src="@drawable/sonda_v2"
-        app:layout_constraintBottom_toTopOf="@+id/cardView"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="false"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/sonda"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/sonda_v3"
+            app:layout_constraintBottom_toTopOf="@+id/cardView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.cardview.widget.CardView>
+
+
 
     <ImageView
         android:id="@+id/logo"
@@ -27,7 +43,8 @@
         android:src="@drawable/aitex_textile_research_institute_vector_logo"
         app:layout_constraintEnd_toStartOf="@+id/guideline1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
 
     <!--Posiciones-->
 
@@ -36,7 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.26"
+        app:layout_constraintGuide_percent="0.36"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -44,7 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.7347932"
+        app:layout_constraintGuide_percent="0.64"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -52,7 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.054719564"
+        app:layout_constraintGuide_percent="0.19"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -60,7 +77,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.875513"
+        app:layout_constraintGuide_percent="0.926"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Medidores-->
@@ -69,25 +86,21 @@
         android:id="@+id/presSensor1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="120dp"
         android:text="P1: 43%"
-        app:layout_constraintBottom_toTopOf="@+id/guideline3"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
         tools:text="P1: 43%" />
 
     <TextView
         android:id="@+id/presSensor2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="110dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginTop="120dp"
         android:text="P2: 15%"
-        app:layout_constraintEnd_toStartOf="@+id/guideline1"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/guideline3"
         tools:text="P2: 15%" />
 
@@ -95,12 +108,11 @@
         android:id="@+id/presSensor3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="110dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="30dp"
         android:text="P3: 20%"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintEnd_toStartOf="@+id/guideline1"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline3"
         tools:text="P3: 20%" />
 
@@ -108,38 +120,35 @@
         android:id="@+id/presSensor4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="135dp"
+        android:layout_marginBottom="30dp"
         android:text="P4: 10%"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
-        app:layout_constraintEnd_toStartOf="@+id/guideline1"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
         tools:text="P4: 10%" />
 
     <TextView
         android:id="@+id/presSensor5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="135dp"
+        android:layout_marginBottom="145dp"
         android:text="P5: 5%"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline1"
+        app:layout_constraintStart_toStartOf="parent"
         tools:text="P5: 5%" />
 
     <TextView
         android:id="@+id/presSensor6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="145dp"
+        android:text="P6: 0%"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="P6: 0%"
-        android:text="P6: 0%"/>
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        tools:text="P6: 0%" />
 
     <!-- Control de flexión-->
 
@@ -147,7 +156,7 @@
         android:id="@+id/tvFlex"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Flexion"
+        android:text="@string/flexion"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:textSize="15sp"
@@ -159,14 +168,13 @@
         android:id="@+id/progressFlex"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
         android:indeterminate="false"
-        android:progress="0"
         android:max="200"
+        android:progress="0"
         app:indicatorColor="#B35B5B"
         app:indicatorDirectionCircular="counterclockwise"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintStart_toStartOf="@+id/guideline1"
+        app:layout_constraintEnd_toStartOf="@+id/guideline1"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline3"
         app:trackColor="@android:color/transparent"
         tools:progress="180" />
@@ -191,7 +199,7 @@
         android:id="@+id/tvIncl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Inclinación"
+        android:text="@string/inclinacion"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:textSize="15sp"
@@ -203,15 +211,14 @@
         android:id="@+id/progressIncl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="170dp"
         android:indeterminate="false"
-        android:progress="0"
         android:max="200"
+        android:progress="0"
         app:indicatorColor="#B35B5B"
         app:indicatorDirectionCircular="counterclockwise"
-        app:layout_constraintBottom_toTopOf="@+id/guideline4"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintStart_toStartOf="@+id/guideline1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
         app:trackColor="@android:color/transparent"
         tools:progress="180" />
 
@@ -229,41 +236,49 @@
         app:layout_constraintTop_toBottomOf="@+id/tvIncl"
         tools:text="-" />
 
+    <!-- indicadores en barra inferior -->
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:cardBackgroundColor="#6C6B6B"
-        app:cardCornerRadius="20dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="0dp"
+        android:layout_marginBottom="5dp"
+        app:cardBackgroundColor="#D8D7D7"
+        app:cardCornerRadius="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline4">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btConnect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Conectar"
-                android:layout_marginEnd="20dp"/>
+                android:layout_marginEnd="20dp"
+                android:text="@string/conectar" />
+
             <ImageView
                 android:id="@+id/ivBattery"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="20dp"
                 android:src="@drawable/ic_battery_unknown" />
+
             <TextView
                 android:id="@+id/tvBattery"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
                 android:gravity="center"
                 android:text="50%"
-                android:textColor="@color/white"
-                android:layout_marginEnd="20dp"/>
+                android:textColor="@color/white" />
 
             <ImageView
                 android:id="@+id/ivConexion"
@@ -271,16 +286,17 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="20dp"
                 android:src="@drawable/baseline_wifi_24"
-                app:tint="#CF1313"/>
+                app:tint="#CF1313" />
+
             <TextView
                 android:id="@+id/tvConexion"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="disconected"
-                android:textColor="@color/white"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"/>
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:text="@string/disconected"
+                android:textColor="@color/white" />
 
         </LinearLayout>
 
@@ -293,7 +309,7 @@
         android:id="@+id/tvConectando"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Conectando..."
+        android:text="@string/conectando"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:textSize="15sp"
@@ -315,8 +331,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.43" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 
