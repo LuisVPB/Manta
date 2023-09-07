@@ -262,7 +262,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                android:text="@string/conectar" />
+                android:text="@string/conectar"
+                android:textColor="@color/black"
+                android:backgroundTint="#A3A1A1"/>
 
             <ImageView
                 android:id="@+id/ivBattery"
@@ -278,7 +280,7 @@
                 android:layout_marginEnd="20dp"
                 android:gravity="center"
                 android:text="50%"
-                android:textColor="@color/white" />
+                android:textColor="@color/black" />
 
             <ImageView
                 android:id="@+id/ivConexion"
@@ -296,7 +298,7 @@
                 android:layout_marginEnd="20dp"
                 android:gravity="center"
                 android:text="@string/disconected"
-                android:textColor="@color/white" />
+                android:textColor="@color/black" />
 
         </LinearLayout>
 
