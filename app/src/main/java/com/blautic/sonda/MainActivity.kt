@@ -1,14 +1,16 @@
 package com.blautic.sonda
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
-import android.widget.ProgressBar
+import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -20,15 +22,36 @@ import com.blautic.sonda.viewModel.MainViewModelFactory
 import com.diegulog.ble.gatt.ConnectionState
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.launch
-import java.math.RoundingMode
-import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+import com.blautic.sonda.utils.Util
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var mainViewModelFactory: MainViewModelFactory
+    private val exportExcelActivityResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            data?.let {
+                Util.generatedExcel(
+                    this,
+                    it.data!!,
+                    "time",
+                    "sensor1",
+                    "sensor2",
+                    "sensor3",
+                    "sensor4",
+                    "sensor5",
+                    "sensor6"
+                )
+            }
+        }
+    }
 
     //Permisos:
     var PERMISSIONS_REQUIRED = arrayOf(
@@ -68,8 +91,15 @@ class MainActivity : AppCompatActivity() {
 
         binding.btConnect.setOnClickListener {
             var estadoConex = viewModel.conected
-            if(estadoConex) viewModel.disconnect("77:77:77:77:77:77")
-            else viewModel.connect("77:77:77:77:77:77")
+            if(estadoConex) {
+                viewModel.disconnect("77:77:77:77:77:77")
+
+                // Activo el guardado en excel:
+                val timeStamp = SimpleDateFormat("MMdd_HHmmss").format(Date())
+                saveFile("monitor_$timeStamp.xls")
+            } else viewModel.connect("77:77:77:77:77:77")
+
+
         }
 
         // Mostrar estado de batería:
@@ -214,6 +244,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun saveFile(name: String?) {
+        val exportIntent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        exportIntent.addCategory(Intent.CATEGORY_OPENABLE)
+        val myMime = MimeTypeMap.getSingleton()
+        val mimeType = myMime.getMimeTypeFromExtension("xls")
+        exportIntent.type = mimeType
+        exportIntent.putExtra(Intent.EXTRA_TITLE, name)
+        exportExcelActivityResult.launch(exportIntent)
+    }
+
 }
 
     //////////////////////////////////////
@@ -226,3 +266,4 @@ private fun CircularProgressIndicator.setPolarProgress(value: Int) {
     }
     progress =  (value.absoluteValue * 100) / 180
 }
+
