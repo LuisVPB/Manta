@@ -114,6 +114,7 @@ public class ArrayToExcel {
             if (tables == null || tables.size() == 0) {
                 Log.d("info", "tabla vacía, contenido: "+tables.toString());
             }
+            Log.d("info", "exportando archivo .xls");
             return exportTables(arrayPrueba, fileName);
 
         } catch (Exception e) {

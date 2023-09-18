@@ -261,9 +261,17 @@
                 android:id="@+id/btConnect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:layout_marginHorizontal="20dp"
                 android:text="@string/conectar"
                 android:textColor="@color/black"
+                android:backgroundTint="#A3A1A1"/>
+
+            <ImageButton
+                android:id="@+id/btCaptura"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_xls"
                 android:backgroundTint="#A3A1A1"/>
 
             <ImageView

@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var mainViewModelFactory: MainViewModelFactory
+
     private val exportExcelActivityResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -41,13 +42,7 @@ class MainActivity : AppCompatActivity() {
                 Util.generatedExcel(
                     this,
                     it.data!!,
-                    "time",
-                    "sensor1",
-                    "sensor2",
-                    "sensor3",
-                    "sensor4",
-                    "sensor5",
-                    "sensor6"
+                    "resultados"
                 )
             }
         }
@@ -87,19 +82,22 @@ class MainActivity : AppCompatActivity() {
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        //checkBlePermissions()
+        binding.btCaptura.setOnClickListener {
+            // Activo el guardado en excel:
+            viewModel.startExport(exportExcelActivityResult)
+            viewModel.arrayDatosExp.clear()
+
+            //viewModel.collectDataExp()
+
+        }
 
         binding.btConnect.setOnClickListener {
             var estadoConex = viewModel.conected
             if(estadoConex) {
                 viewModel.disconnect("77:77:77:77:77:77")
-
-                // Activo el guardado en excel:
-                val timeStamp = SimpleDateFormat("MMdd_HHmmss").format(Date())
-                saveFile("monitor_$timeStamp.xls")
-            } else viewModel.connect("77:77:77:77:77:77")
-
-
+            } else {
+                viewModel.connect("77:77:77:77:77:77")
+            }
         }
 
         // Mostrar estado de batería:

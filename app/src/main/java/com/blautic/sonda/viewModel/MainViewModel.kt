@@ -2,10 +2,22 @@ package com.blautic.sonda.viewModel
 
 
 import android.content.Context
+import android.content.Intent
+import android.util.Log
+import android.webkit.MimeTypeMap
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.blautic.sonda.R
 import com.blautic.sonda.ble.device.BleManager
+import com.blautic.sonda.utils.Util
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class MainViewModel(
     context: Context
@@ -16,6 +28,8 @@ class MainViewModel(
     var conected = false
         get() =  bleManager.isConnected
 
+    var arrayDatosExp = mutableListOf<Array<String>>()
+
     fun connectionState() = bleManager.connectionStateFlow.asLiveData()
     fun statusFlow() = bleManager.statusFlow
     fun presionFlow() = bleManager.presionFlow
@@ -24,6 +38,26 @@ class MainViewModel(
 
     fun connect(mac: String) {
         bleManager.connectToDevice(mac)
+    }
+
+    fun collectDataExp(){
+        viewModelScope.launch {
+            presionFlow().collect {
+
+                arrayDatosExp.add(
+                    arrayOf(
+                        String.format("%.1f", it?.get(0)?: 0F),
+                        String.format("%.1f", it?.get(1)?: 0F),
+                        String.format("%.1f", it?.get(2)?: 0F),
+                        String.format("%.1f", it?.get(3)?: 0F),
+                        String.format("%.1f", it?.get(4)?: 0F),
+                        String.format("%.1f", it?.get(5)?: 0F)
+                    )
+                )
+                Log.d("info", arrayDatosExp.toString())
+
+            }
+        }
     }
 
     fun disconnect(mac: String) {
@@ -44,6 +78,23 @@ class MainViewModel(
             else -> R.drawable.ic_battery_alert
         }
     }
+
+    fun startExport(arl: ActivityResultLauncher<Intent>){
+        exportExcelActivityResult = arl
+        val timeStamp = SimpleDateFormat("MMdd_HHmmss").format(Date())
+        saveFile("monitor_$timeStamp.xls")
+    }
+    private fun saveFile(name: String?) {
+        val exportIntent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        exportIntent.addCategory(Intent.CATEGORY_OPENABLE)
+        val myMime = MimeTypeMap.getSingleton()
+        val mimeType = myMime.getMimeTypeFromExtension("xls")
+        exportIntent.type = mimeType
+        exportIntent.putExtra(Intent.EXTRA_TITLE, name)
+        exportExcelActivityResult.launch(exportIntent)
+    }
+
+    private lateinit var exportExcelActivityResult: ActivityResultLauncher<Intent>
 
 
     // funciones de comprobación de permisos
