@@ -1,14 +1,12 @@
 package com.blautic.sonda
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
-import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,8 +20,6 @@ import com.blautic.sonda.viewModel.MainViewModelFactory
 import com.diegulog.ble.gatt.ConnectionState
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import com.blautic.sonda.utils.Util
@@ -83,11 +79,24 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         binding.btCaptura.setOnClickListener {
-            // Activo el guardado en excel:
-            viewModel.startExport(exportExcelActivityResult)
-            viewModel.arrayDatosExp.clear()
 
-            //viewModel.collectDataExp()
+            if (viewModel.capturandoDatos){
+                viewModel.capturandoDatos = false
+
+                // Activo el guardado en excel:
+                viewModel.startExport(exportExcelActivityResult)
+                binding.btCaptura.setImageResource(R.drawable.ic_collect)
+                viewModel.arrayDatosExp.clear()
+            } else {
+                viewModel.capturandoDatos = true
+                viewModel.collectDataExp()
+                binding.btCaptura.setImageResource(R.drawable.ic_xls)
+            }
+
+
+
+
+            //
 
         }
 
@@ -240,16 +249,6 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
-    }
-
-    fun saveFile(name: String?) {
-        val exportIntent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-        exportIntent.addCategory(Intent.CATEGORY_OPENABLE)
-        val myMime = MimeTypeMap.getSingleton()
-        val mimeType = myMime.getMimeTypeFromExtension("xls")
-        exportIntent.type = mimeType
-        exportIntent.putExtra(Intent.EXTRA_TITLE, name)
-        exportExcelActivityResult.launch(exportIntent)
     }
 
 }

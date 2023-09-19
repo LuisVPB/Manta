@@ -1,10 +1,7 @@
 package com.blautic.sonda.utils;
 
 
-import static org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.DONT_MOVE_AND_RESIZE;
-
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -12,9 +9,6 @@ import android.util.Log;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,9 +22,10 @@ public class ArrayToExcel {
     private String fileName;
     private String filePath;
     private List<String> tables;
-    private List<String> sql;
-    private List<String> sheetName;
     private Workbook workbook;
+    String[][] datos;
+
+    private String[][] expArray;
 
 
     public static class Builder {
@@ -39,10 +34,11 @@ public class ArrayToExcel {
         private List<String> tables;
         private List<String> sheetName  = new ArrayList<>();
         private Context context;
-        private int countSheet;
+        private String[][] datos;
 
-        public Builder(Context context) {
+        public Builder(Context context, String[][] datos) {
             this.context = context;
+            this.datos = datos;
         }
 
         public ArrayToExcel build() {
@@ -52,7 +48,8 @@ public class ArrayToExcel {
             if (TextUtils.isEmpty(fileName)) {
                 this.fileName = "capturas_sonda.xls";
             }
-            return new ArrayToExcel(tables, fileName, filePath, sheetName);
+
+            return new ArrayToExcel(tables, fileName, filePath, datos);
         }
 
         /**
@@ -71,7 +68,7 @@ public class ArrayToExcel {
         }
 
 
-        public  Builder setTables(String... tables) {
+        public  Builder setTables(String tables) {
             this.tables = Arrays.asList(tables);
             return this;
         }
@@ -91,35 +88,9 @@ public class ArrayToExcel {
             return this;
         }
 
-        public String start() throws Exception {
-            final  ArrayToExcel arrayToExcel = build();
-            return arrayToExcel.start();
-        }
-
         public void start( ExportListener listener) {
             final  ArrayToExcel arrayToExcel = build();
             arrayToExcel.start2(listener);
-        }
-    }
-
-    /**
-     * import Tables task
-     *
-     * @return output file path
-     */
-    public String start() throws Exception {
-        String[][] arrayPrueba = {{"data_time", "pres1", "pres2", "pres3", "pres4", "pres5", "pres6"},
-                {"15-09-23 / 13:15", "20%", "30%", "0%", "10%", "10%", "10%"}};
-        try {
-            if (tables == null || tables.size() == 0) {
-                Log.d("info", "tabla vacía, contenido: "+tables.toString());
-            }
-            Log.d("info", "exportando archivo .xls");
-            return exportTables(arrayPrueba, fileName);
-
-        } catch (Exception e) {
-            Log.d("info", "fallo al iniciar la exportación: "+e.getLocalizedMessage());
-            throw e;
         }
     }
 
@@ -138,11 +109,12 @@ public class ArrayToExcel {
             public void run() {
                 try {
                     if (tables == null || tables.size() == 0) {
-                        Log.d("info", "tabla vacía, contenido: "+tables.toString());
+                        Log.d("info", "tabla vacía, contenido: ");
                     }
+
                     String[][] arrayPrueba = {{"data_time", "pres1", "pres2", "pres3", "pres4", "pres5", "pres6"},
                             {"15-09-23 / 13:15", "20%", "30%", "0%", "10%", "10%", "10%"}};
-                    final String finalFilePath = exportTables(arrayPrueba, fileName);
+                    final String finalFilePath = exportTables(expArray, fileName);
                     if (listener != null) {
                         handler.post(new Runnable() {
                             @Override
@@ -165,11 +137,11 @@ public class ArrayToExcel {
     }
 
     private ArrayToExcel(List<String> tables, String fileName,
-                          String filePath, List<String> sheetName) {
+                          String filePath, String[][] datos) {
         this.fileName = fileName;
         this.filePath = filePath;
-        this.sheetName = sheetName;
         this.tables = tables;
+        this.datos = datos;
     }
 
     /**

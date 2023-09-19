@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import com.blautic.sonda.R
 import com.blautic.sonda.ble.device.BleManager
 import com.blautic.sonda.utils.Util
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -27,6 +28,8 @@ class MainViewModel(
 
     var conected = false
         get() =  bleManager.isConnected
+
+    var capturandoDatos = false
 
     var arrayDatosExp = mutableListOf<Array<String>>()
 
@@ -42,7 +45,7 @@ class MainViewModel(
 
     fun collectDataExp(){
         viewModelScope.launch {
-            presionFlow().collect {
+            presionFlow().takeWhile { capturandoDatos == true }.collect {
 
                 arrayDatosExp.add(
                     arrayOf(
@@ -54,10 +57,16 @@ class MainViewModel(
                         String.format("%.1f", it?.get(5)?: 0F)
                     )
                 )
-                Log.d("info", arrayDatosExp.toString())
+                Log.d("info", "nueva fila: ${arrayDatosExp.last()[0]}")
 
             }
         }
+    }
+
+    fun stopCollectDataExp(){
+        viewModelScope.launch {
+        }.cancel()
+        Log.d("info", "fin de recolección ${arrayDatosExp.last()[0]}")
     }
 
     fun disconnect(mac: String) {

@@ -15,15 +15,16 @@ import java.util.*
 class Util {
 
     companion object {
-        fun generatedExcel(context: Context, uri: Uri, vararg tables: String?) {
-            if (tables.size == 0) return
-            generarExcel(context, uri, *tables)
+        fun generatedExcel(context: Context, uri: Uri, tables: String?) {
+            tables?.let {
+                generarExcel(context, uri, tables)
+            }
         }
 
         private fun generarExcel(
             context: Context,
             uri: Uri,
-            vararg tables: String?
+            tables: String?
         ) {
             val progressDialog = ProgressDialog(context)
             progressDialog.setCancelable(false)
@@ -31,6 +32,7 @@ class Util {
             progressDialog.show()
 
             val builder = ArrayToExcel.Builder(context)
+            builder.setTables(tables)
             builder.setOutputPath(context.filesDir.path)
             builder.setOutputFileName("monitor.xls")
             builder.start(object : ArrayToExcel.ExportListener {
