@@ -25,7 +25,7 @@ public class ArrayToExcel {
     private Workbook workbook;
     String[][] datos;
 
-    private String[][] expArray;
+    //private String[][] expArray;
 
 
     public static class Builder {
@@ -52,35 +52,14 @@ public class ArrayToExcel {
             return new ArrayToExcel(tables, fileName, filePath, datos);
         }
 
-        /**
-         * @param fileName
-         * @return Builder
-         * @deprecated Use {@link #setOutputFileName(String fileName)} instead.
-         */
-        @Deprecated
-        public  Builder setFileName(String fileName) {
-            return setOutputFileName(fileName);
-        }
-
         public  Builder setOutputFileName(String fileName) {
             this.fileName = fileName;
             return this;
         }
 
-
         public  Builder setTables(String tables) {
             this.tables = Arrays.asList(tables);
             return this;
-        }
-
-        /**
-         * @param path
-         * @return Builder
-         * @deprecated Use {@link #setOutputPath(String path)} instead.
-         */
-        @Deprecated
-        public  Builder setPath(String path) {
-            return setOutputPath(path);
         }
 
         public  Builder setOutputPath(String path) {
@@ -103,41 +82,38 @@ public class ArrayToExcel {
         if (listener != null) {
             listener.onStart();
         }
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    if (tables == null || tables.size() == 0) {
-                        Log.d("info", "tabla vacía, contenido: ");
-                    }
-
-                    String[][] arrayPrueba = {{"data_time", "pres1", "pres2", "pres3", "pres4", "pres5", "pres6"},
-                            {"15-09-23 / 13:15", "20%", "30%", "0%", "10%", "10%", "10%"}};
-                    final String finalFilePath = exportTables(expArray, fileName);
-                    if (listener != null) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onCompleted(finalFilePath);
-                            }
-                        });
-                    }
-                } catch (final Exception e) {
-                    if (listener != null)
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onError(e);
-                            }
-                        });
+        new Thread(() -> {
+            try {
+                if (tables == null || tables.size() == 0) {
+                    Log.d("info", "tabla vacía, contenido: ");
                 }
+
+                final String finalFilePath = exportTables(datos, fileName);
+
+                if (listener != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onCompleted(finalFilePath);
+                        }
+                    });
+                }
+            } catch (final Exception e) {
+                if (listener != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onError(e);
+                        }
+                    });
             }
         }).start();
     }
 
-    private ArrayToExcel(List<String> tables, String fileName,
-                          String filePath, String[][] datos) {
+    private ArrayToExcel(
+            List<String> tables, String fileName,
+            String filePath, String[][] datos
+    ) {
         this.fileName = fileName;
         this.filePath = filePath;
         this.tables = tables;

@@ -1,6 +1,7 @@
 package com.blautic.sonda
 
 import android.Manifest
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
@@ -35,11 +36,11 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val data = result.data
             data?.let {
-                Util.generatedExcel(
-                    this,
-                    it.data!!,
-                    "resultados"
-                )
+                viewModel.generatedExcel(
+                this,
+                it.data!!,
+                "resultados"
+            )
             }
         }
     }
@@ -60,6 +61,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -86,16 +89,12 @@ class MainActivity : AppCompatActivity() {
                 // Activo el guardado en excel:
                 viewModel.startExport(exportExcelActivityResult)
                 binding.btCaptura.setImageResource(R.drawable.ic_collect)
-                viewModel.arrayDatosExp.clear()
+
             } else {
                 viewModel.capturandoDatos = true
-                viewModel.collectDataExp()
+                viewModel.collectDataExp(this)
                 binding.btCaptura.setImageResource(R.drawable.ic_xls)
             }
-
-
-
-
             //
 
         }

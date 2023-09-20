@@ -15,54 +15,6 @@ import java.util.*
 class Util {
 
     companion object {
-        fun generatedExcel(context: Context, uri: Uri, tables: String?) {
-            tables?.let {
-                generarExcel(context, uri, tables)
-            }
-        }
-
-        private fun generarExcel(
-            context: Context,
-            uri: Uri,
-            tables: String?
-        ) {
-            val progressDialog = ProgressDialog(context)
-            progressDialog.setCancelable(false)
-            progressDialog.setMessage("Exporting data, please wait..")
-            progressDialog.show()
-
-            val builder = ArrayToExcel.Builder(context)
-            builder.setTables(tables)
-            builder.setOutputPath(context.filesDir.path)
-            builder.setOutputFileName("monitor.xls")
-            builder.start(object : ArrayToExcel.ExportListener {
-
-                override fun onStart() {
-                    progressDialog.show()
-                    Timber.d("onStart")
-                }
-
-                override fun onCompleted(filePath: String?) {
-                    Timber.d("onCompleted %s", filePath)
-                    progressDialog.dismiss()
-                    try {
-                        val outputStream = context.contentResolver.openOutputStream(uri)
-                        outputStream?.let {
-                            copy(File(filePath), outputStream)
-                            showMessage(context, uri.path)
-                        }
-
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-
-                override fun onError(e: Exception?) {
-                    progressDialog.dismiss()
-                    Timber.e(e)
-                }
-            })
-        }
 
         fun showMessage(context: Context?, msn: String?) {
             Toast.makeText(context, msn, Toast.LENGTH_SHORT).show()

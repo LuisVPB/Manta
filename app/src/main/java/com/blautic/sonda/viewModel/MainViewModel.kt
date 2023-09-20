@@ -1,8 +1,10 @@
 package com.blautic.sonda.viewModel
 
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.activity.result.ActivityResult
@@ -14,9 +16,16 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.blautic.sonda.R
 import com.blautic.sonda.ble.device.BleManager
+import com.blautic.sonda.utils.ArrayToExcel
 import com.blautic.sonda.utils.Util
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -31,7 +40,7 @@ class MainViewModel(
 
     var capturandoDatos = false
 
-    var arrayDatosExp = mutableListOf<Array<String>>()
+    val arrayDatosExp = mutableListOf<Array<String>>()
 
     fun connectionState() = bleManager.connectionStateFlow.asLiveData()
     fun statusFlow() = bleManager.statusFlow
@@ -43,18 +52,32 @@ class MainViewModel(
         bleManager.connectToDevice(mac)
     }
 
-    fun collectDataExp(){
+    fun collectDataExp(context: Context){
+        Util.showMessage(context, "almacenamiento de datos iniciado")
+        val filteredPresionFlow = presionFlow().takeWhile { capturandoDatos == true }
+        val filteredAnglesFlow = anglesFlow().takeWhile { capturandoDatos == true }
+        // variable para pruebas:
+        val controlFlow = createControlFlow().takeWhile { capturandoDatos == true }
+
+        val combinedExpFlow = combine(filteredPresionFlow, filteredAnglesFlow, controlFlow){ presFlowValue, angleFlowValue, periodicTestFlow ->
+            Log.d("info", "$presFlowValue $angleFlowValue")
+            Pair(presFlowValue, angleFlowValue)
+        }
+
         viewModelScope.launch {
-            presionFlow().takeWhile { capturandoDatos == true }.collect {
+            combinedExpFlow.collect {
 
                 arrayDatosExp.add(
                     arrayOf(
-                        String.format("%.1f", it?.get(0)?: 0F),
-                        String.format("%.1f", it?.get(1)?: 0F),
-                        String.format("%.1f", it?.get(2)?: 0F),
-                        String.format("%.1f", it?.get(3)?: 0F),
-                        String.format("%.1f", it?.get(4)?: 0F),
-                        String.format("%.1f", it?.get(5)?: 0F)
+                        SimpleDateFormat("HH:mm:ss").format(Date()),
+                        String.format("%.1f", it.first?.get(0)?: 0F),
+                        String.format("%.1f", it.first?.get(1)?: 0F),
+                        String.format("%.1f", it.first?.get(2)?: 0F),
+                        String.format("%.1f", it.first?.get(3)?: 0F),
+                        String.format("%.1f", it.first?.get(4)?: 0F),
+                        String.format("%.1f", it.first?.get(5)?: 0F),
+                        String.format("%.1f", it.second?.get(0)?: 0F),
+                        String.format("%.1f", it.second?.get(1)?: 0F)
                     )
                 )
                 Log.d("info", "nueva fila: ${arrayDatosExp.last()[0]}")
@@ -63,11 +86,6 @@ class MainViewModel(
         }
     }
 
-    fun stopCollectDataExp(){
-        viewModelScope.launch {
-        }.cancel()
-        Log.d("info", "fin de recolección ${arrayDatosExp.last()[0]}")
-    }
 
     fun disconnect(mac: String) {
         bleManager.disconnect()
@@ -105,7 +123,7 @@ class MainViewModel(
 
     private lateinit var exportExcelActivityResult: ActivityResultLauncher<Intent>
 
-
+    /////////////////////////////////////
     // funciones de comprobación de permisos
     /*fun enableBluetooth(activity: Activity, requestCode: Int) {
         if (requestCode >= 0) {
@@ -136,4 +154,66 @@ class MainViewModel(
      */
 
     //val isBluetoothOn = deviceManager.isBluetoothOn()
+
+    //////////////////////////
+
+    fun generatedExcel(context: Context, uri: Uri, tables: String?) {
+        tables?.let {
+            generarExcel(context, uri, tables)
+        }
+    }
+
+    private fun generarExcel(
+        context: Context,
+        uri: Uri,
+        tables: String?
+    ) {
+        val progressDialog = ProgressDialog(context)
+        progressDialog.setCancelable(false)
+        progressDialog.setMessage("Exporting data, please wait..")
+        progressDialog.show()
+        arrayDatosExp.add(0,arrayOf("data_time", "pres1", "pres2", "pres3", "pres4", "pres5", "pres6", "flexion", "inclinacion"))
+        val builder = ArrayToExcel.Builder(context, arrayDatosExp.toTypedArray())
+        builder.setTables(tables)
+        builder.setOutputPath(context.filesDir.path)
+        builder.setOutputFileName("monitor.xls")
+        builder.start(object : ArrayToExcel.ExportListener {
+
+            override fun onStart() {
+                progressDialog.show()
+                Timber.d("onStart")
+            }
+
+            override fun onCompleted(filePath: String?) {
+                Timber.d("onCompleted %s", filePath)
+                progressDialog.dismiss()
+                try {
+                    val outputStream = context.contentResolver.openOutputStream(uri)
+                    outputStream?.let {
+                        Util.copy(File(filePath), outputStream)
+                        Util.showMessage(context, "Datos guardados en: $filePath")//uri.path)
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            override fun onError(e: Exception?) {
+                progressDialog.dismiss()
+                Timber.e(e)
+            }
+        })
+        arrayDatosExp.clear()
+    }
+
+    fun createControlFlow(): Flow<Unit> = flow {
+        while (true) {
+            // Emitir un valor de control (puede ser cualquier valor, usaremos Unit aquí)
+            emit(Unit)
+
+            // Esperar dos segundos antes de emitir el siguiente valor
+            delay(2000)
+        }
+    }
 }
