@@ -4,13 +4,13 @@ package com.blautic.sonda.viewModel
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.webkit.MimeTypeMap
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -29,6 +29,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 
+
 class MainViewModel(
     context: Context
 ): ViewModel() {
@@ -41,6 +42,8 @@ class MainViewModel(
     var capturandoDatos = false
 
     val arrayDatosExp = mutableListOf<Array<String>>()
+
+    var userCode = ""
 
     fun connectionState() = bleManager.connectionStateFlow.asLiveData()
     fun statusFlow() = bleManager.statusFlow
@@ -173,7 +176,7 @@ class MainViewModel(
         progressDialog.setMessage("Exporting data, please wait..")
         progressDialog.show()
         arrayDatosExp.add(0,arrayOf("data_time", "pres1", "pres2", "pres3", "pres4", "pres5", "pres6", "flexion", "inclinacion"))
-        val builder = ArrayToExcel.Builder(context, arrayDatosExp.toTypedArray())
+        val builder = ArrayToExcel.Builder(context, arrayDatosExp.toTypedArray(), userCode?: "anonim_user")
         builder.setTables(tables)
         builder.setOutputPath(context.filesDir.path)
         builder.setOutputFileName("monitor.xls")
@@ -193,6 +196,7 @@ class MainViewModel(
                         Util.copy(File(filePath), outputStream)
                         Util.showMessage(context, "Datos guardados en: $filePath")//uri.path)
                     }
+                    //arrayDatosExp.clear()
 
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -204,7 +208,6 @@ class MainViewModel(
                 Timber.e(e)
             }
         })
-        arrayDatosExp.clear()
     }
 
     fun createControlFlow(): Flow<Unit> = flow {
@@ -215,5 +218,28 @@ class MainViewModel(
             // Esperar dos segundos antes de emitir el siguiente valor
             delay(2000)
         }
+    }
+
+    fun getAppVersion(context: Context): String{
+        var version:String? = null
+
+        try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            /*val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                packageInfo.longVersionCode
+            } else {
+                //VERSION.SDK_INT < P
+                packageInfo.versionCode
+            }*/
+            val versionName = packageInfo.versionName
+            Log.d("info", packageInfo.versionName)
+            version = versionName
+
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+
+        return version?: "--"
+
     }
 }

@@ -150,6 +150,43 @@
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         tools:text="P6: 0%" />
 
+    <TextView
+        android:id="@+id/tvVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:textColor="@color/black"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="v_1.0c"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="20dp"
+        android:hint="Paciente Id"
+        app:layout_constraintBottom_toTopOf="@+id/tvVersion"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:placeholderText="Paciente Id:"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etUsuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:padding="16dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            tools:text="pacienteA" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
     <!-- Control de flexión-->
 
     <TextView
@@ -261,6 +298,7 @@
                 android:id="@+id/btConnect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_marginHorizontal="20dp"
                 android:text="@string/conectar"
                 android:textColor="@color/black"
@@ -270,7 +308,8 @@
                 android:id="@+id/btCaptura"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="20dp"
                 android:src="@drawable/ic_collect"
                 android:backgroundTint="#A3A1A1"/>
 
@@ -278,6 +317,7 @@
                 android:id="@+id/ivBattery"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:layout_marginStart="20dp"
                 android:src="@drawable/ic_battery_unknown" />
 
@@ -285,6 +325,7 @@
                 android:id="@+id/tvBattery"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:layout_marginEnd="20dp"
                 android:gravity="center"
                 android:text="50%"
@@ -294,11 +335,12 @@
                 android:id="@+id/ivConexion"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="20dp"
                 android:src="@drawable/baseline_wifi_24"
                 app:tint="#CF1313" />
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/tvConexion"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -306,7 +348,7 @@
                 android:layout_marginEnd="20dp"
                 android:gravity="center"
                 android:text="@string/disconected"
-                android:textColor="@color/black" />
+                android:textColor="@color/black" />-->
 
         </LinearLayout>
 

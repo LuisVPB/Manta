@@ -5,4 +5,5 @@
     <string name="conectando">Conectando...</string>
     <string name="conectar">Conectar</string>
     <string name="disconected">disconected</string>
+    <string name="paciente_id">paciente Id</string>
 </resources>

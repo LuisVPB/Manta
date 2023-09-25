@@ -80,11 +80,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        binding.tvVersion.text = "versión: ${viewModel.getAppVersion(this)}"
+        Log.d("info", viewModel.getAppVersion(this))
+
 
         binding.btCaptura.setOnClickListener {
 
             if (viewModel.capturandoDatos){
                 viewModel.capturandoDatos = false
+                viewModel.userCode = binding.etUsuario.text.toString()
+                Log.d("info", "usuario recogido: ${viewModel.userCode}")
 
                 // Activo el guardado en excel:
                 viewModel.startExport(exportExcelActivityResult)
@@ -158,7 +163,7 @@ class MainActivity : AppCompatActivity() {
 
             when(it){
                 ConnectionState.DISCONNECTED -> {
-                    binding.tvConexion.text = "disconnected"
+                    //binding.tvConexion.text = "disconnected"
                     binding.ivConexion.setColorFilter(Color.parseColor("#CF1313"))
                     binding.ivBattery.setImageResource(viewModel.getBatteryLevelDrawable(null))
                     binding.btConnect.text = "Conectar"
@@ -168,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                     Log.i("conexion","conectando......")
                 }
                 ConnectionState.CONNECTED -> {
-                    binding.tvConexion.text = "connected"
+                    //binding.tvConexion.text = "connected"
                     binding.ivConexion.setColorFilter(Color.parseColor("#4CAF50"))
                     binding.btConnect.text = "Desconectar"
                 }
@@ -176,7 +181,7 @@ class MainActivity : AppCompatActivity() {
 
                 }
                 ConnectionState.FAILED -> {
-                    binding.tvConexion.text = "disconnected"
+                    //binding.tvConexion.text = "disconnected"
                     binding.ivConexion.setColorFilter(Color.parseColor("#CF1313"))
                     binding.btConnect.text = "Conectar"
                     binding.tvBattery.text = ""

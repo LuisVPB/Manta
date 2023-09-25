@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -24,6 +25,7 @@ public class ArrayToExcel {
     private List<String> tables;
     private Workbook workbook;
     String[][] datos;
+    String userCode;
 
     //private String[][] expArray;
 
@@ -35,10 +37,12 @@ public class ArrayToExcel {
         private List<String> sheetName  = new ArrayList<>();
         private Context context;
         private String[][] datos;
+        private String userCode;
 
-        public Builder(Context context, String[][] datos) {
+        public Builder(Context context, String[][] datos, String userCode) {
             this.context = context;
             this.datos = datos;
+            this.userCode = userCode;
         }
 
         public ArrayToExcel build() {
@@ -49,7 +53,7 @@ public class ArrayToExcel {
                 this.fileName = "capturas_sonda.xls";
             }
 
-            return new ArrayToExcel(tables, fileName, filePath, datos);
+            return new ArrayToExcel(tables, fileName, filePath, datos, userCode);
         }
 
         public  Builder setOutputFileName(String fileName) {
@@ -88,7 +92,7 @@ public class ArrayToExcel {
                     Log.d("info", "tabla vacía, contenido: ");
                 }
 
-                final String finalFilePath = exportTables(datos, fileName);
+                final String finalFilePath = exportTables(datos, fileName, userCode);
 
                 if (listener != null) {
                     handler.post(new Runnable() {
@@ -111,13 +115,17 @@ public class ArrayToExcel {
     }
 
     private ArrayToExcel(
-            List<String> tables, String fileName,
-            String filePath, String[][] datos
+            List<String> tables,
+            String fileName,
+            String filePath,
+            String[][] datos,
+            String userCode
     ) {
         this.fileName = fileName;
         this.filePath = filePath;
         this.tables = tables;
         this.datos = datos;
+        this.userCode = userCode;
     }
 
     /**
@@ -126,7 +134,7 @@ public class ArrayToExcel {
      * @param fileName target file name
      * @return target file path
      */
-    private String exportTables(String[][] data, final String fileName) {
+    private String exportTables(String[][] data, final String fileName, String userCode) {
         // Crear un nuevo libro de Excel
         if (fileName.toLowerCase().endsWith(".xls")) {
             workbook = new XSSFWorkbook();
@@ -136,9 +144,13 @@ public class ArrayToExcel {
 
         // Crear una nueva hoja de Excel
         LocalDateTime locaDate = LocalDateTime.now();
+        int day  = locaDate.getDayOfMonth();
+        int month  = locaDate.getMonthValue();
+        int year  = locaDate.getYear();
         int hours  = locaDate.getHour();
         int minutes = locaDate.getMinute();
-        Sheet sheet = workbook.createSheet("presiones_"+hours+"_"+minutes);
+        Sheet sheet = workbook.createSheet(userCode+"_"+day+"-"+month+"-"+year+"_"+hours+"_"+minutes);
+        Log.d("info", userCode+"_"+day+"/"+month+"/"+year+"_"+hours+"_"+minutes);
 
         // Iterar sobre el array de datos y escribirlo en el archivo Excel
         for (int rowIndex = 0; rowIndex < data.length; rowIndex++) {
