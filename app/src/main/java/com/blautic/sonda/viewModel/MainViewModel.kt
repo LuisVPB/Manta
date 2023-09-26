@@ -43,7 +43,7 @@ class MainViewModel(
 
     val arrayDatosExp = mutableListOf<Array<String>>()
 
-    var userCode = ""
+    var userCode = "no_name"
 
     fun connectionState() = bleManager.connectionStateFlow.asLiveData()
     fun statusFlow() = bleManager.statusFlow
@@ -112,7 +112,7 @@ class MainViewModel(
     fun startExport(arl: ActivityResultLauncher<Intent>){
         exportExcelActivityResult = arl
         val timeStamp = SimpleDateFormat("MMdd_HHmmss").format(Date())
-        saveFile("monitor_$timeStamp.xls")
+        saveFile("${userCode}_$timeStamp.xls")
     }
     private fun saveFile(name: String?) {
         val exportIntent = Intent(Intent.ACTION_CREATE_DOCUMENT)
@@ -175,8 +175,15 @@ class MainViewModel(
         progressDialog.setCancelable(false)
         progressDialog.setMessage("Exporting data, please wait..")
         progressDialog.show()
-        arrayDatosExp.add(0,arrayOf("data_time", "pres1", "pres2", "pres3", "pres4", "pres5", "pres6", "flexion", "inclinacion"))
-        val builder = ArrayToExcel.Builder(context, arrayDatosExp.toTypedArray(), userCode?: "anonim_user")
+        arrayDatosExp.addAll(0,
+            listOf(
+                arrayOf("Paciente: ", userCode),
+                arrayOf(""),
+                arrayOf("time", "% pres1", "% pres2", "% pres3", "% pres4", "% pres5", "% pres6", "% flex", "% inclin")
+            )
+        )
+        //arrayDatosExp.add(0,arrayOf("data_time", "pres1", "pres2", "pres3", "pres4", "pres5", "pres6", "flexion", "inclinacion"))
+        val builder = ArrayToExcel.Builder(context, arrayDatosExp.toTypedArray(), userCode)
         builder.setTables(tables)
         builder.setOutputPath(context.filesDir.path)
         builder.setOutputFileName("monitor.xls")

@@ -1,13 +1,17 @@
 package com.blautic.sonda
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -70,6 +74,8 @@ class MainActivity : AppCompatActivity() {
         mainViewModelFactory = MainViewModelFactory(this)
         viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
+        //////////
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestMultiplePermissions.launch(
                 arrayOf(
@@ -83,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         binding.tvVersion.text = "versión: ${viewModel.getAppVersion(this)}"
         Log.d("info", viewModel.getAppVersion(this))
 
+        //////////
 
         binding.btCaptura.setOnClickListener {
 
@@ -137,6 +144,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Mpu (no se usa este flow)
         lifecycleScope.launch {
             viewModel.mpuFlow().collect {
 
@@ -190,6 +198,28 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+
+        //////////////////////////////
+
+        // Configurar espacio de texto para identificador de paciente:
+        binding.etUsuario.apply {
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    // Quitar el foco al EditText cuando se presione "Hecho"
+                    this.clearFocus()
+                    // Oculta el teclado virtual
+                    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
+
+                    true
+                } else {
+                    false
+                }
+            }
+
+
+        }
+
     }
 
     //////////////////////////////////
@@ -258,6 +288,7 @@ class MainActivity : AppCompatActivity() {
 }
 
     //////////////////////////////////////
+
 
 private fun CircularProgressIndicator.setPolarProgress(value: Int) {
     if (value < 0) {

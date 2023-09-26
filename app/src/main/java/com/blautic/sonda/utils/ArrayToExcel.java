@@ -149,7 +149,7 @@ public class ArrayToExcel {
         int year  = locaDate.getYear();
         int hours  = locaDate.getHour();
         int minutes = locaDate.getMinute();
-        Sheet sheet = workbook.createSheet(userCode+"_"+day+"-"+month+"-"+year+"_"+hours+"_"+minutes);
+        Sheet sheet = workbook.createSheet(userCode+"_"+day+"-"+month+"-"+year+"_"+hours+"_"+minutes); //título de la hoja
         Log.d("info", userCode+"_"+day+"/"+month+"/"+year+"_"+hours+"_"+minutes);
 
         // Iterar sobre el array de datos y escribirlo en el archivo Excel
