@@ -124,7 +124,6 @@ class BleManager(private var context: Context) {
         @SuppressLint("MissingPermission")
 
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-            //super.onConnectionStateChange(gatt, status, newState)
 
             Log.i("BluetoothGattCallback", "onConnectionStateChange status: $status")
             Log.i("BluetoothGattCallback", "onConnectionStateChange newState: $newState")
@@ -239,9 +238,9 @@ class BleManager(private var context: Context) {
         ) {
             super.onCharacteristicChanged(gatt, characteristic)
 
-            ////////////////
+
             val parse = BleBytesParser(characteristic?.value)
-            /////////////////////////////
+
 
             when (characteristic?.uuid) {
 
@@ -394,7 +393,7 @@ class BleManager(private var context: Context) {
     private fun normalization(combinedValue: Int): Float {
         Log.d("NOTIFICATION", "val presion convinado $combinedValue")
         val min = 1950
-        val result: Float = ((min-combinedValue)/min.toFloat()) //Porcentaje = ((1950 - Valor) / 1950) * 100
+        val result: Float = ((min-combinedValue)/min.toFloat())
         return  if(result >=0) result * 100 else 0F
     }
 
@@ -420,8 +419,6 @@ class BleManager(private var context: Context) {
     private fun getPeriodo(frecuencia: Double): Double {
         return 1 / frecuencia
     }
-
-    ////////////////////////////////////////////////////////////
 
     private var lasAdcBat = 0
     private val avgBat: MutableList<Int> = ArrayList()

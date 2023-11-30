@@ -74,8 +74,6 @@ class MainActivity : AppCompatActivity() {
         mainViewModelFactory = MainViewModelFactory(this)
         viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
-        //////////
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestMultiplePermissions.launch(
                 arrayOf(
@@ -88,8 +86,6 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         binding.tvVersion.text = "versión: ${viewModel.getAppVersion(this)}"
         Log.d("info", viewModel.getAppVersion(this))
-
-        //////////
 
         binding.btCaptura.setOnClickListener {
 
@@ -107,7 +103,6 @@ class MainActivity : AppCompatActivity() {
                 viewModel.collectDataExp(this)
                 binding.btCaptura.setImageResource(R.drawable.ic_xls)
             }
-            //
 
         }
 
@@ -171,7 +166,6 @@ class MainActivity : AppCompatActivity() {
 
             when(it){
                 ConnectionState.DISCONNECTED -> {
-                    //binding.tvConexion.text = "disconnected"
                     binding.ivConexion.setColorFilter(Color.parseColor("#CF1313"))
                     binding.ivBattery.setImageResource(viewModel.getBatteryLevelDrawable(null))
                     binding.btConnect.text = "Conectar"
@@ -181,7 +175,6 @@ class MainActivity : AppCompatActivity() {
                     Log.i("conexion","conectando......")
                 }
                 ConnectionState.CONNECTED -> {
-                    //binding.tvConexion.text = "connected"
                     binding.ivConexion.setColorFilter(Color.parseColor("#4CAF50"))
                     binding.btConnect.text = "Desconectar"
                 }
@@ -198,8 +191,6 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-
-        //////////////////////////////
 
         // Configurar espacio de texto para identificador de paciente:
         binding.etUsuario.apply {

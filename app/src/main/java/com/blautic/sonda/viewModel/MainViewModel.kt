@@ -60,9 +60,9 @@ class MainViewModel(
         val filteredPresionFlow = presionFlow().takeWhile { capturandoDatos == true }
         val filteredAnglesFlow = anglesFlow().takeWhile { capturandoDatos == true }
         // variable para pruebas:
-        val controlFlow = createControlFlow().takeWhile { capturandoDatos == true }
+        //val controlFlow = createControlFlow().takeWhile { capturandoDatos == true }
 
-        val combinedExpFlow = combine(filteredPresionFlow, filteredAnglesFlow, controlFlow){ presFlowValue, angleFlowValue, periodicTestFlow ->
+        val combinedExpFlow = combine(filteredPresionFlow, filteredAnglesFlow){ presFlowValue, angleFlowValue ->//controlFlow){ presFlowValue, angleFlowValue, periodicTestFlow ->
             Log.d("info", "$presFlowValue $angleFlowValue")
             Pair(presFlowValue, angleFlowValue)
         }
