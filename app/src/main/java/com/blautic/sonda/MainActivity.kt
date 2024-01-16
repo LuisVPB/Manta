@@ -213,56 +213,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    //////////////////////////////////
-
-    /*
-    private fun checkBlePermissions(): Boolean {
-        return if (viewModel.hasPermissions(this, PERMISSIONS_REQUIRED)) {
-            isBleAndGpsEnable()
-        } else {
-            ActivityCompat.requestPermissions(this, PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
-            false
-        }
-    }
-     */
-
-    /*
-    private fun isBleAndGpsEnable(): Boolean {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !viewModel.checkGPSIsEnable(this)) {
-            MaterialAlertDialogBuilder(this)
-                .setMessage(R.string.enable_gps)
-                .setNegativeButton(
-                    android.R.string.cancel
-                ) { _, _ -> finish() }
-                .setPositiveButton(
-                    android.R.string.ok
-                ) { _, _ ->
-                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    startActivityForResult(intent, PERMISSIONS_REQUEST_CODE)
-                }
-                .setCancelable(false)
-                .show()
-            return false
-        }
-        if (!viewModel.isBluetoothOn) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.enable_bluetooth)
-                .setNegativeButton(
-                    android.R.string.cancel
-                ) { _, _ -> finish() }
-                .setPositiveButton(
-                    android.R.string.ok
-                ) { _, _ -> viewModel.enableBluetooth(this, 102) }
-                .setCancelable(false)
-                .show()
-            return false
-        }
-        return true
-    }
-
-     */
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -278,7 +228,6 @@ class MainActivity : AppCompatActivity() {
 
 }
 
-    //////////////////////////////////////
 
 
 private fun CircularProgressIndicator.setPolarProgress(value: Int) {
