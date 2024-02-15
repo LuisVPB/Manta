@@ -302,7 +302,7 @@ class BleManager(private var context: Context) {
                         "mpu = ${characteristic?.value.contentToString()}")
 
                     characteristic?.let {
-                        val valoresBytes: ByteArray = ByteArray(6)
+                        val valoresBytes: ByteArray = ByteArray(12)
                         val mpuIntegers: MutableList<Int?> = mutableListOf()
                         val anglesIntegers: MutableList<Float?> = mutableListOf()
 
@@ -391,7 +391,7 @@ class BleManager(private var context: Context) {
     }
 
     private fun normalization(combinedValue: Int): Float {
-        Log.d("NOTIFICATION", "val presion convinado $combinedValue")
+        Log.d("NOTIFICATION", "val presion combinado $combinedValue")
         val min = 1950
         val result: Float = ((min-combinedValue)/min.toFloat())
         return  if(result >=0) result * 100 else 0F
