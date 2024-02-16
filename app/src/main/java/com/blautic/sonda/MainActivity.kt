@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
-import android.text.InputType
 import android.util.Log
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -27,7 +27,6 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
-import com.blautic.sonda.utils.Util
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -87,23 +86,56 @@ class MainActivity : AppCompatActivity() {
         binding.tvVersion.text = "versión: ${viewModel.getAppVersion(this)}"
         Log.d("info", viewModel.getAppVersion(this))
 
-        binding.btCaptura.setOnClickListener {
+        binding.switchCapture.setOnCheckedChangeListener { buttonView, isChecked ->
 
-            if (viewModel.capturandoDatos){
-                viewModel.capturandoDatos = false
+            viewModel.capturandoDatos = isChecked
+            Log.d("info", "selector de captura pasa a: $isChecked")
+
+            if (viewModel.capturandoDatos) {
+
+                Log.d("info", "NO recolectando datos, Se procede a exportar los datos guardados hasta ahora")
+
+                binding.switchCapture.apply {
+                    thumbDrawable.setColorFilter(
+                        resources.getColor(R.color.teal_700),
+                        PorterDuff.Mode.MULTIPLY
+                    )
+
+                    trackDrawable.setColorFilter(
+                        resources.getColor(R.color.teal_700),
+                        PorterDuff.Mode.MULTIPLY
+                    )
+                }
+
+                // Activo la recogida de datos recogidos en excel:
+                viewModel.subirFase()
+                viewModel.collectDataExp(this)
+                //binding.btCaptura.setImageResource(R.drawable.ic_xls)
+
+            } else {
+
+                Log.d("info", "Recolectando datos")
+
+                binding.switchCapture.apply {
+                    thumbDrawable.clearColorFilter()
+                    trackDrawable.clearColorFilter()
+                }
+
                 viewModel.userCode = binding.etUsuario.text.toString()
                 Log.d("info", "usuario recogido: ${viewModel.userCode}")
 
-                // Activo el guardado en excel:
+                // Activo la exportación a excel:
+                viewModel.resetFase()
                 viewModel.startExport(exportExcelActivityResult)
-                binding.btCaptura.setImageResource(R.drawable.ic_collect)
-
-            } else {
-                viewModel.capturandoDatos = true
-                viewModel.collectDataExp(this)
-                binding.btCaptura.setImageResource(R.drawable.ic_xls)
+                //binding.btCaptura.setImageResource(R.drawable.ic_collect)
             }
+        }
 
+        binding.btSubirFase.setOnClickListener {
+            if (viewModel.capturandoDatos){
+                viewModel.subirFase()
+                Log.d("fase", viewModel.numFase.toString())
+            }
         }
 
         binding.btConnect.setOnClickListener {
@@ -119,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.statusFlow().collect {
                 binding.ivBattery.setImageResource(viewModel.getBatteryLevelDrawable(it))
-                binding.tvBattery.text = "${it?:""}"
+                binding.tvBattery.text = "${it?:""}%"
             }
 
         }
@@ -135,6 +167,7 @@ class MainActivity : AppCompatActivity() {
                     presSensor4.text= "P4: ${String.format("%.1f", it?.get(3)?: 0F)} %"
                     presSensor5.text= "P5: ${String.format("%.1f", it?.get(4)?: 0F)} %"
                     presSensor6.text= "P6: ${String.format("%.1f", it?.get(5)?: 0F)} %"
+                    presSensor7.text= "P7: ${String.format("%.1f", it?.get(6)?: 0F)} %"
                 }
             }
         }
@@ -166,6 +199,7 @@ class MainActivity : AppCompatActivity() {
 
             when(it){
                 ConnectionState.DISCONNECTED -> {
+                    binding.switchCapture.isEnabled = false
                     binding.ivConexion.setColorFilter(Color.parseColor("#CF1313"))
                     binding.ivBattery.setImageResource(viewModel.getBatteryLevelDrawable(null))
                     binding.btConnect.text = "Conectar"
@@ -175,6 +209,7 @@ class MainActivity : AppCompatActivity() {
                     Log.i("conexion","conectando......")
                 }
                 ConnectionState.CONNECTED -> {
+                    binding.switchCapture.isEnabled = true
                     binding.ivConexion.setColorFilter(Color.parseColor("#4CAF50"))
                     binding.btConnect.text = "Desconectar"
                 }

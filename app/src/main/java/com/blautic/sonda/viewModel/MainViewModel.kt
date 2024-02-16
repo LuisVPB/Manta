@@ -40,6 +40,16 @@ class MainViewModel(
         get() =  bleManager.isConnected
 
     var capturandoDatos = false
+     var numFase = 0
+
+
+    fun subirFase(){
+        numFase++
+    }
+
+    fun resetFase(){
+        numFase = 0
+    }
 
     val arrayDatosExp = mutableListOf<Array<String>>()
 
@@ -73,12 +83,14 @@ class MainViewModel(
                 arrayDatosExp.add(
                     arrayOf(
                         SimpleDateFormat("HH:mm:ss").format(Date()),
+                        numFase.toString(),
                         String.format("%.1f", it.first?.get(0)?: 0F),
                         String.format("%.1f", it.first?.get(1)?: 0F),
                         String.format("%.1f", it.first?.get(2)?: 0F),
                         String.format("%.1f", it.first?.get(3)?: 0F),
                         String.format("%.1f", it.first?.get(4)?: 0F),
                         String.format("%.1f", it.first?.get(5)?: 0F),
+                        String.format("%.1f", it.first?.get(6)?: 0F),
                         String.format("%.1f", it.second?.get(0)?: 0F),
                         String.format("%.1f", it.second?.get(1)?: 0F)
                     )
@@ -88,7 +100,6 @@ class MainViewModel(
             }
         }
     }
-
 
     fun disconnect(mac: String) {
         bleManager.disconnect()
@@ -179,7 +190,7 @@ class MainViewModel(
             listOf(
                 arrayOf("Paciente: ", userCode),
                 arrayOf(""),
-                arrayOf("time", "% pres1", "% pres2", "% pres3", "% pres4", "% pres5", "% pres6", "% flex", "% inclin")
+                arrayOf("time", "fase", "% pres1", "% pres2", "% pres3", "% pres4", "% pres5", "% pres6", "% pres7", "% flex", "% inclin")
             )
         )
         //arrayDatosExp.add(0,arrayOf("data_time", "pres1", "pres2", "pres3", "pres4", "pres5", "pres6", "flexion", "inclinacion"))

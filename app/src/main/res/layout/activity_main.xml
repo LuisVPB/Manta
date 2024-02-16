@@ -151,6 +151,16 @@
         tools:text="P6: 0%" />
 
     <TextView
+        android:id="@+id/presSensor7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="P1: 43%"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/guideline1"
+        tools:text="P1: 43%" />
+
+    <TextView
         android:id="@+id/tvVersion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -293,64 +303,97 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:gravity="start"
+            android:orientation="horizontal"
+            android:weightSum="10">
 
             <Button
                 android:id="@+id/btConnect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="20dp"
+                android:layout_marginHorizontal="5dp"
+                android:backgroundTint="#A3A1A1"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:text="@string/conectar"
-                android:textColor="@color/black"
-                android:backgroundTint="#A3A1A1"/>
+                android:textColor="@color/black" />
 
-            <ImageButton
-                android:id="@+id/btCaptura"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="20dp"
-                android:src="@drawable/ic_collect"
-                android:backgroundTint="#A3A1A1"/>
-
-            <ImageView
-                android:id="@+id/ivBattery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="20dp"
-                android:src="@drawable/ic_battery_unknown" />
-
-            <TextView
-                android:id="@+id/tvBattery"
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_capture"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginEnd="20dp"
-                android:gravity="center"
-                android:text="50%"
-                android:textColor="@color/black" />
+                android:layout_marginHorizontal="5dp"
+                android:rotation="0"
+                android:scaleX="1.2"
+                android:scaleY="1.2"
+                app:switchMinWidth="50dp"
+                app:thumbTint="@color/teal_200"
+                app:track="@drawable/switch_track"
+                app:trackTint="@color/primary_variant"
+                android:enabled="false"
+                tools:enabled="false"/>
+
+            <ImageButton
+                android:id="@+id/btSubirFase"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="5dp"
+                android:layout_weight="2.5"
+                android:adjustViewBounds="true"
+                android:background="@drawable/switch_track"
+                android:src="@drawable/rounded_phase_plus_1"
+                app:layout_constraintBottom_toBottomOf="@+id/switch_capture"
+                app:layout_constraintStart_toEndOf="@+id/switch_capture"
+                app:layout_constraintTop_toTopOf="@+id/switch_capture" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:gravity="end">
+
+                <ImageView
+                    android:id="@+id/ivBattery"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="8dp"
+                    android:src="@drawable/ic_battery_unknown"
+                    app:layout_constraintBottom_toBottomOf="@+id/btSubirFase"
+                    app:layout_constraintStart_toEndOf="@+id/btSubirFase"
+                    app:layout_constraintTop_toTopOf="@+id/btSubirFase" />
+
+                <TextView
+                    android:id="@+id/tvBattery"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:text="100%"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"/>
+
+            </LinearLayout>
+
+
 
             <ImageView
                 android:id="@+id/ivConexion"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="20dp"
+                android:layout_weight="2.5"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="5dp"
                 android:src="@drawable/baseline_wifi_24"
+                app:layout_constraintBottom_toBottomOf="@+id/ivBattery"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvBattery"
+                app:layout_constraintTop_toTopOf="@+id/ivBattery"
                 app:tint="#CF1313" />
-
-            <!--<TextView
-                android:id="@+id/tvConexion"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"
-                android:gravity="center"
-                android:text="@string/disconected"
-                android:textColor="@color/black" />-->
 
         </LinearLayout>
 
