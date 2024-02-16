@@ -1,4 +1,4 @@
-package com.blautic.sonda
+package com.blautic.sonda.ui
 
 import android.Manifest
 import android.content.Context
@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.blautic.sonda.R
 import com.blautic.sonda.databinding.ActivityMainBinding
 import com.blautic.sonda.viewModel.MainViewModel
 import com.blautic.sonda.viewModel.MainViewModelFactory
