@@ -5,5 +5,38 @@
     android:layout_height="match_parent"
     tools:context=".ui.GraficsFragment">
 
+    <!-- Toolbar personalizada -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary">
+
+        <!-- Botón de retroceso -->
+        <ImageButton
+            android:id="@+id/btBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_24"
+            android:background="@drawable/switch_track"/>
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gráficos de Sesión"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="72dp" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Contenido de tu Fragmento -->
+    <!-- Aquí debes colocar tus vistas para el contenido del Fragmento -->
+
+
+
 
 </androidx.core.widget.NestedScrollView>
