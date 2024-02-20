@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.blautic.sonda.databinding.FragmentGraficsBinding
@@ -17,8 +18,9 @@ class GraficsFragment : Fragment() {
 
     private val binding get() = _binding!!
     private var _binding: FragmentGraficsBinding? = null
-    private lateinit var mainViewModelFactory: MainViewModelFactory
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by activityViewModels { MainViewModelFactory(requireContext().applicationContext) }
+    /*private lateinit var mainViewModelFactory: MainViewModelFactory
+    private lateinit var viewModel: MainViewModel*/
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,8 +29,8 @@ class GraficsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentGraficsBinding.inflate(inflater, container, false)
-        mainViewModelFactory = MainViewModelFactory(requireContext())
-        //viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
+        /*mainViewModelFactory = MainViewModelFactory(requireContext())
+        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)*/
         return binding.root
     }
 
@@ -45,7 +47,7 @@ class GraficsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        //viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
         // Configurar el botón de retroceso
         binding.btBack.setOnClickListener {

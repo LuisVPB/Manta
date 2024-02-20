@@ -28,12 +28,13 @@
         <!-- Título -->
         <TextView
             android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="72dp"
             android:text="Gráficos de Sesión"
+            android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>

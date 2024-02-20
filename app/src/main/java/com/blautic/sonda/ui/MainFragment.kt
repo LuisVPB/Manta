@@ -41,8 +41,10 @@ class MainFragment : Fragment() {
 
     private val binding get() = _binding!!
     private var _binding: FragmentMainBinding? = null
-    private lateinit var mainViewModelFactory: MainViewModelFactory
-    private lateinit var viewModel: MainViewModel //by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels { MainViewModelFactory(requireContext().applicationContext) }
+
+    //private lateinit var mainViewModelFactory: MainViewModelFactory
+    //private lateinit var viewModel: MainViewModel //by activityViewModels()
 
     private val exportExcelActivityResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -73,8 +75,8 @@ class MainFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentMainBinding.inflate(inflater, container, false)
 
-        mainViewModelFactory = MainViewModelFactory(requireContext())
-        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
+        /*mainViewModelFactory = MainViewModelFactory(requireContext())
+        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)*/
 
         return binding.root
     }

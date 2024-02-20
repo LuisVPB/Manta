@@ -14,6 +14,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -35,7 +36,7 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModels { MainViewModelFactory(applicationContext) }
     private lateinit var mainViewModelFactory: MainViewModelFactory
     private var navController: NavController? = null
 
@@ -79,7 +80,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         mainViewModelFactory = MainViewModelFactory(this)
-        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
         // Configurar el NavController
         navController = findNavController(this, R.id.nav_host_fragment_sonda)

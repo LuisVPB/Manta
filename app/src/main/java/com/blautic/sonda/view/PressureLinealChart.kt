@@ -115,9 +115,9 @@ class PressureLinealChart @JvmOverloads constructor(
             var set = lineData.getDataSetByIndex(0)
             set = createSetLineChart()
             lineData.addDataSet(set)
-            /*for (i in 1..359) {
+            for (i in 1..359) {
                 lineData.addEntry(Entry(set.entryCount.toFloat(), 0f), 0)
-            }*/
+            }
             lineData.addEntry(Entry(set.entryCount.toFloat(), entry), 0)
             lineData.notifyDataChanged()
             // let the chart know it's data has changed
