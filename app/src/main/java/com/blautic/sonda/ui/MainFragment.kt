@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -41,7 +42,7 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
     private var _binding: FragmentMainBinding? = null
     private lateinit var mainViewModelFactory: MainViewModelFactory
-    private lateinit var viewModel: MainViewModel
+    private lateinit var viewModel: MainViewModel //by activityViewModels()
 
     private val exportExcelActivityResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -158,6 +159,7 @@ class MainFragment : Fragment() {
         }
 
         binding.btCharts.setOnClickListener {
+
             val bundle = bundleOf()
             NavHostFragment.findNavController(this).navigate(R.id.graficsFragment, bundle)
 
@@ -216,6 +218,7 @@ class MainFragment : Fragment() {
             when(it){
                 ConnectionState.DISCONNECTED -> {
                     binding.switchCapture.isEnabled = false
+                    binding.btCharts.isEnabled = false
                     binding.ivConexion.setColorFilter(Color.parseColor("#CF1313"))
                     binding.ivBattery.setImageResource(viewModel.getBatteryLevelDrawable(null))
                     binding.btConnect.text = "Conectar"
@@ -226,6 +229,7 @@ class MainFragment : Fragment() {
                 }
                 ConnectionState.CONNECTED -> {
                     binding.switchCapture.isEnabled = true
+                    binding.btCharts.isEnabled = true
                     binding.ivConexion.setColorFilter(Color.parseColor("#4CAF50"))
                     binding.btConnect.text = "Desconectar"
                 }

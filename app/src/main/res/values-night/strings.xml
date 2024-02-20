@@ -6,4 +6,5 @@
     <string name="conectar">Conectar</string>
     <string name="disconected">disconected</string>
     <string name="paciente_id">paciente Id</string>
+    <string name="carga_graf">Loading data</string>
 </resources>
