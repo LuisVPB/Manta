@@ -15,6 +15,7 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 
 class PressureLinealChart @JvmOverloads constructor(
     context: Context,
@@ -112,13 +113,16 @@ class PressureLinealChart @JvmOverloads constructor(
     fun addEntryLineChart(entry: Float) {
         chart?.data?.let { lineData ->
             Log.d("grafico", entry.toString())
-            var set = lineData.getDataSetByIndex(0)
-            set = createSetLineChart()
-            lineData.addDataSet(set)
-            for (i in 1..359) {
-                lineData.addEntry(Entry(set.entryCount.toFloat(), 0f), 0)
+            var set: ILineDataSet? = lineData.getDataSetByIndex(0) //createSetLineChart()
+            if (set == null) {
+                set = createSetLineChart()
+                lineData.addDataSet(set)
+                for (i in 1..359) {
+                    lineData.addEntry(Entry(set?.entryCount?.toFloat() ?: 0f, 0f), 0)
+                }
             }
-            lineData.addEntry(Entry(set.entryCount.toFloat(), entry), 0)
+
+            lineData.addEntry(Entry(/*lineData.entryCount.toFloat()*/ set?.entryCount?.toFloat() ?: 0f, entry), 0)
             lineData.notifyDataChanged()
             // let the chart know it's data has changed
             chart?.notifyDataSetChanged()

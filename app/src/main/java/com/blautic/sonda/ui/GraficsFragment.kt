@@ -57,17 +57,23 @@ class GraficsFragment : Fragment() {
 
         // configurar gráficos
         binding.apply {
+            arrayOf(
+                plcSensor1,
+                plcSensor2,
+                plcSensor3,
+                plcSensor4,
+                plcSensor5,
+                plcSensor6,
+                plcSensor7
+            ).forEachIndexed { index, pressureLinealChart ->
+                pressureLinealChart.apply {
+                    setLabelSensorName(" Sensor de presión-${index + 1}")
+                    setMaxScale(100)
+                    setMinScale(0)
+                }
 
-            plcSensor1.setLabelSensorName(" Sensor de presión-1")
-            //plcSensor1.setScale(100f)
-            plcSensor1.setMaxScale(100)
-            plcSensor1.setMinScale(0)
-            plcSensor2.setLabelSensorName(" Sensor de presión-2")
-            plcSensor3.setLabelSensorName(" Sensor de presión-3")
-            plcSensor4.setLabelSensorName(" Sensor de presión-4")
-            plcSensor5.setLabelSensorName(" Sensor de presión-5")
-            plcSensor6.setLabelSensorName(" Sensor de presión-6")
-            plcSensor7.setLabelSensorName(" Sensor de presión-7")
+            }
+
         }
 
         lifecycleScope.launch {
@@ -75,6 +81,12 @@ class GraficsFragment : Fragment() {
                 Log.d("graficos", (it?.get(0)?: "nah").toString())
                 binding.run {
                     plcSensor1.addEntryLineChart(it?.get(0)?:0f)
+                    plcSensor2.addEntryLineChart(it?.get(1)?:0f)
+                    plcSensor3.addEntryLineChart(it?.get(2)?:0f)
+                    plcSensor4.addEntryLineChart(it?.get(3)?:0f)
+                    plcSensor5.addEntryLineChart(it?.get(4)?:0f)
+                    plcSensor6.addEntryLineChart(it?.get(5)?:0f)
+                    plcSensor7.addEntryLineChart(it?.get(6)?:0f)
                 }
             }
         }
