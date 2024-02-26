@@ -195,6 +195,10 @@ class MainFragment : Fragment() {
         // Mpu (por ahora no se usa este flow)
         lifecycleScope.launch {
             viewModel.mpuFlow().collect {
+                Log.d(
+                    "mpu",
+                    "${it?.get(0).toString()} / ${it?.get(1).toString()} / ${it?.get(2).toString()} / ${it?.get(3).toString()} / ${it?.get(4).toString()} / ${it?.get(5).toString()} / "
+                )
 
             }
         }

@@ -19,8 +19,6 @@ class GraficsFragment : Fragment() {
     private val binding get() = _binding!!
     private var _binding: FragmentGraficsBinding? = null
     private val viewModel: MainViewModel by activityViewModels { MainViewModelFactory(requireContext().applicationContext) }
-    /*private lateinit var mainViewModelFactory: MainViewModelFactory
-    private lateinit var viewModel: MainViewModel*/
 
     override fun onCreateView(
         inflater: LayoutInflater,

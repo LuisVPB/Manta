@@ -6,9 +6,7 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
-import android.content.Intent
 import android.util.Log
-import androidx.core.app.ActivityCompat.startActivityForResult
 import com.blautic.sonda.ble.device.mpu.Mpu
 import com.diegulog.ble.BleBytesParser
 import com.diegulog.ble.gatt.ConnectionState
@@ -16,9 +14,41 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
+import uk.me.berndporr.iirj.Butterworth
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 class BleManager(private var context: Context) {
+
+    var datosRecogidos:  MutableList<Array<Double>> = mutableListOf()
+    private var gravityLowPassFilterX: Butterworth? = null
+    private var gravityLowPassFilterY: Butterworth? = null
+    private var gravityLowPassFilterZ: Butterworth? = null
+
+    init {
+        setGravityFilter(20.0, 0.5) //0.5 o 1
+
+    }
+
+    private val h: Double = 0.025
+
+    private var prevAccX: Double = 0.0
+    private var prevAccY: Double = 0.0
+    private var prevAccZ: Double = 0.0
+
+    private var prevVelX: Double = 0.0
+    private var prevVelY: Double = 0.0
+    private var prevVelZ: Double = 0.0
+
+    private var velMedX: Double = 0.0
+    private var velMedY: Double = 0.0
+    private var velMedZ: Double = 0.0
+
+    private var posMedX: Double = 0.0
+    private var posMedY: Double = 0.0
+    private var posMedZ: Double = 0.0
+
 
     private val accelerometer = Mpu()
 
@@ -52,7 +82,7 @@ class BleManager(private var context: Context) {
     val presionFlow get() = _presionFlow.asStateFlow()
 
     // Valores de MPU
-    private val _mpuFlow = MutableStateFlow<MutableList<Int?>?>(null)
+    private val _mpuFlow = MutableStateFlow<MutableList<Float?>?>(null) // MutableStateFlow<MutableList<Int?>?>(null)
     val mpuFlow get() = _mpuFlow.asStateFlow()
 
     // Ángulos asociados al MPU
@@ -318,11 +348,9 @@ class BleManager(private var context: Context) {
 
                         Log.d("NOTIFICATION mpu", valoresBytes.toString())
 
-                        // Actualizar la variable entera con el valor combinado
-                        _mpuFlow.value = mpuIntegers
-
                         val parse = BleBytesParser(it.value)
                         accelerometer.setData(parse)
+
                         Log.d("angulos_todos","angles: xy: ${Integer.toHexString(accelerometer.angles.xy.toInt())} ,xz: ${Integer.toHexString(accelerometer.angles.xz.toInt())} , zy: ${Integer.toHexString(accelerometer.angles.zy.toInt()) }")
                         anglesIntegers.apply {
                             add(accelerometer.angles.xz)
@@ -334,6 +362,36 @@ class BleManager(private var context: Context) {
 
                         Log.d("NOTIFICATION ${characteristic?.uuid}",
                             "angles = ${anglesIntegers}")
+
+                        // Actualizar la variable entera con el valor combinado
+                        //_mpuFlow.value = mpuIntegers
+                        //////////////////
+                        val mpuValues: MutableList<Float?> = mutableListOf()
+                        val accWithoutGravity = filter(
+                            doubleArrayOf(
+                                accelerometer.accX.toDouble(),
+                                accelerometer.accY.toDouble(),
+                                accelerometer.accZ.toDouble()
+                            )
+                        )
+                        mpuValues.apply {
+                            add(accelerometer.accX)
+                            add(accelerometer.accY)
+                            add(accelerometer.accZ)
+                            add(accelerometer.gyrX)
+                            add(accelerometer.gyrY)
+                            add(accelerometer.gyrZ)
+                            add(accelerometer.angles.xz)
+                            add(accelerometer.angles.zy)
+                            add(accelerometer.angles.xy)
+                        }
+                        _mpuFlow.value = mpuValues
+
+                        integrate(
+                            accWithoutGravity.get(0),
+                            accWithoutGravity.get(1),
+                            accWithoutGravity.get(2)
+                        )
 
                     }
 
@@ -450,6 +508,90 @@ class BleManager(private var context: Context) {
             avgBat.add(bat)
             battery = avgBat.average().toInt()
         }
+    }
+
+
+    private fun integrate(accX: Double, accY: Double, accZ: Double){
+        Log.d(
+            "integrate",
+            "acc: $accX / $accY / $accZ "
+        )
+
+        if (abs(accX-prevAccX) < 0.001 || accX<0.01){
+            prevAccX = 0.0
+            prevVelX = 0.0
+            posMedX = 0.0
+        } else {
+            // aprox de paso de integracion por método de trapecios simples:
+            // primera integral
+            velMedX += (h * (prevAccX + accX)/2.0)
+            prevAccX = accX
+
+            // segunda integral
+            posMedX += (h * (prevVelX + velMedX)/2.0)
+            prevVelX = velMedX
+        }
+        if (abs(accX-prevAccY) < 0.001 || accY<0.01){
+            prevAccY = 0.0
+            prevVelY = 0.0
+            posMedY = 0.0
+        }else{
+            velMedY += (h * (prevAccY + accY)/2.0)
+            prevAccY = accY
+
+            posMedY += (h * (prevVelY + velMedY)/2.0)
+            prevVelY = velMedY
+        }
+        if (abs(accZ-prevAccZ) < 0.001 || accZ<0.01){
+            prevAccZ = 0.0
+            prevVelZ = 0.0
+            posMedZ = 0.0
+        }else{
+            velMedZ += (h * (prevAccZ + accZ)/2.0)
+            prevAccZ = accZ
+
+            posMedZ += (h * (prevVelZ + velMedZ)/2.0)
+            prevVelZ = velMedZ
+        }
+
+        Log.d(
+            "integrate",
+            "1ªintgr: $velMedX / $velMedY / $velMedZ "
+        )
+
+        Log.d("integrate",
+            "2ªintgr: $posMedX / $posMedY / $posMedZ"
+        )
+        datosRecogidos.add(arrayOf(velMedX, velMedY, velMedZ, posMedX, posMedY, posMedZ))
+    }
+
+    fun setGravityFilter(sampleRate: Double, cutoffFrequency: Double) {
+        // Diseñar los filtros paso bajo para cada eje
+        gravityLowPassFilterX = Butterworth().apply {
+            lowPass(2, sampleRate, cutoffFrequency)
+        }
+
+        gravityLowPassFilterY = Butterworth().apply {
+            lowPass(2, sampleRate, cutoffFrequency)
+        }
+
+        gravityLowPassFilterZ = Butterworth().apply {
+            lowPass(2, sampleRate, cutoffFrequency)
+        }
+    }
+
+    fun filter(acceleration: DoubleArray): DoubleArray {
+
+        // Aplica los filtros a las lecturas de aceleración en cada eje
+        val xFiltered: Double = gravityLowPassFilterX?.filter(acceleration[0]) ?: 0.0
+        val yFiltered: Double = gravityLowPassFilterY?.filter(acceleration[1]) ?: 0.0
+        val zFiltered: Double = gravityLowPassFilterZ?.filter(acceleration[2]) ?: 0.0
+
+        // Resta la componente de la gravedad de las lecturas originales
+        acceleration[0] -= xFiltered
+        acceleration[1] -= yFiltered
+        acceleration[2] -= zFiltered
+        return acceleration
     }
 
     companion object {
