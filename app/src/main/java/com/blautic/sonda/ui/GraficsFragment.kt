@@ -7,11 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.blautic.sonda.databinding.FragmentGraficsBinding
 import com.blautic.sonda.viewModel.MainViewModel
 import com.blautic.sonda.viewModel.MainViewModelFactory
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class GraficsFragment : Fragment() {
@@ -55,6 +55,11 @@ class GraficsFragment : Fragment() {
 
         // configurar gráficos
         binding.apply {
+            pmlcSensores.apply {
+                setLabelSensorName(" Sensor múltiple de presión")
+                setMaxScale(100)
+                setMinScale(0)
+            }
             arrayOf(
                 plcSensor1,
                 plcSensor2,
@@ -77,14 +82,19 @@ class GraficsFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.presionFlow().collect() {
                 Log.d("graficos", (it?.get(0)?: "nah").toString())
-                binding.run {
-                    plcSensor1.addEntryLineChart(it?.get(0)?:0f)
-                    plcSensor2.addEntryLineChart(it?.get(1)?:0f)
-                    plcSensor3.addEntryLineChart(it?.get(2)?:0f)
-                    plcSensor4.addEntryLineChart(it?.get(3)?:0f)
-                    plcSensor5.addEntryLineChart(it?.get(4)?:0f)
-                    plcSensor6.addEntryLineChart(it?.get(5)?:0f)
-                    plcSensor7.addEntryLineChart(it?.get(6)?:0f)
+                it?.let {
+                    binding.run {
+
+                        pmlcSensores.addEntryLineChart(it)
+
+                        plcSensor1.addEntryLineChart(it.get(0) ?:0f)
+                        plcSensor2.addEntryLineChart(it.get(1) ?:0f)
+                        plcSensor3.addEntryLineChart(it.get(2) ?:0f)
+                        plcSensor4.addEntryLineChart(it.get(3) ?:0f)
+                        plcSensor5.addEntryLineChart(it.get(4) ?:0f)
+                        plcSensor6.addEntryLineChart(it.get(5) ?:0f)
+                        plcSensor7.addEntryLineChart(it.get(6) ?:0f)
+                    }
                 }
             }
         }

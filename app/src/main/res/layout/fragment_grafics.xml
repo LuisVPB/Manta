@@ -39,6 +39,16 @@
             android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>
 
+    <com.blautic.sonda.view.PresureMultipleLinealChart
+        android:id="@+id/pmlcSensores"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:background="@drawable/fondo_multigraf"/>
+
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="0dp"
@@ -46,9 +56,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintTop_toBottomOf="@+id/pmlcSensores"
         tools:context=".ui.GraficsFragment">
-
 
         <!-- Gráficos -->
         <LinearLayout
@@ -65,37 +74,37 @@
                 android:id="@+id/plcSensor2"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
-                android:layout_marginVertical="5dp"/>
+                android:layout_marginVertical="5dp" />
 
             <com.blautic.sonda.view.PressureLinealChart
                 android:id="@+id/plcSensor3"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
-                android:layout_marginVertical="5dp"/>
+                android:layout_marginVertical="5dp" />
 
             <com.blautic.sonda.view.PressureLinealChart
                 android:id="@+id/plcSensor4"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
-                android:layout_marginVertical="5dp"/>
+                android:layout_marginVertical="5dp" />
 
             <com.blautic.sonda.view.PressureLinealChart
                 android:id="@+id/plcSensor5"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
-                android:layout_marginVertical="5dp"/>
+                android:layout_marginVertical="5dp" />
 
             <com.blautic.sonda.view.PressureLinealChart
                 android:id="@+id/plcSensor6"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
-                android:layout_marginVertical="5dp"/>
+                android:layout_marginVertical="5dp" />
 
             <com.blautic.sonda.view.PressureLinealChart
                 android:id="@+id/plcSensor7"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
-                android:layout_marginVertical="5dp"/>
+                android:layout_marginVertical="5dp" />
 
 
         </LinearLayout>
