@@ -15,20 +15,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 import uk.me.berndporr.iirj.Butterworth
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 class BleManager(private var context: Context) {
 
-    var datosRecogidos:  MutableList<Array<Double>> = mutableListOf()
     private var gravityLowPassFilterX: Butterworth? = null
     private var gravityLowPassFilterY: Butterworth? = null
     private var gravityLowPassFilterZ: Butterworth? = null
 
     init {
         setGravityFilter(20.0, 0.5) //0.5 o 1
-
     }
 
     private val h: Double = 0.025
@@ -88,6 +85,11 @@ class BleManager(private var context: Context) {
     // Ángulos asociados al MPU
     private val _anglesFlow = MutableStateFlow<MutableList<Float?>?>(null)
     val anglesFlow get() = _anglesFlow.asStateFlow()
+
+    // Velocidad/posición asociada al MPU
+    private val _valoresIntegracion:  MutableStateFlow<Array<Double>> = MutableStateFlow(emptyArray())
+    val valoresIntegracion
+        get() = _valoresIntegracion.asStateFlow()
 
     var isConnected = false
     private var isConnecting = false
@@ -328,7 +330,7 @@ class BleManager(private var context: Context) {
                 }
 
                 BleUUID.UUID_MPU_CHARACTERISTIC -> {
-                    Log.d("NOTIFICATION ${characteristic?.uuid}",
+                    Log.d("MPU_NOTIFICATION ${characteristic?.uuid}",
                         "mpu = ${characteristic?.value.contentToString()}")
 
                     characteristic?.let {
@@ -562,7 +564,7 @@ class BleManager(private var context: Context) {
         Log.d("integrate",
             "2ªintgr: $posMedX / $posMedY / $posMedZ"
         )
-        datosRecogidos.add(arrayOf(velMedX, velMedY, velMedZ, posMedX, posMedY, posMedZ))
+        _valoresIntegracion.value = arrayOf(velMedX, velMedY, velMedZ, posMedX, posMedY, posMedZ)
     }
 
     fun setGravityFilter(sampleRate: Double, cutoffFrequency: Double) {

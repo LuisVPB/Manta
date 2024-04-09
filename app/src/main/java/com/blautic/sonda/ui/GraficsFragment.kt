@@ -13,6 +13,7 @@ import com.blautic.sonda.viewModel.MainViewModel
 import com.blautic.sonda.viewModel.MainViewModelFactory
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.math.sign
 
 class GraficsFragment : Fragment() {
 
@@ -71,6 +72,7 @@ class GraficsFragment : Fragment() {
             ).forEachIndexed { index, pressureLinealChart ->
                 pressureLinealChart.apply {
                     setLabelSensorName(" Sensor de presión-${index + 1}")
+                    setColor(index)
                     setMaxScale(100)
                     setMinScale(0)
                 }
@@ -94,6 +96,24 @@ class GraficsFragment : Fragment() {
                         plcSensor5.addEntryLineChart(it.get(4) ?:0f)
                         plcSensor6.addEntryLineChart(it.get(5) ?:0f)
                         plcSensor7.addEntryLineChart(it.get(6) ?:0f)
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.velPosFlow().collect() {
+                Log.d("posicion_sonda",
+                    "${(it?.get(3))} / ${(it?.get(4))} / ${(it?.get(5))}")
+                it?.let {
+                    binding.run {
+                        svdisplacement.isClickable = false
+                        svdisplacement.max = 100
+                        svdisplacement.min = 0
+                        svdisplacement.progress = (it[4]*200).toInt()
+
+
+
                     }
                 }
             }

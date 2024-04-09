@@ -30,6 +30,8 @@ class PressureLinealChart @JvmOverloads constructor(
     private var labelSensorName: TextView? = null
     private var chart: LineChart? = null
     private var scale = 50
+    private var color = R.color.teal_700
+
 
     init {
         LayoutInflater.from(getContext()).inflate(R.layout.pressure_lineal_chart, this)
@@ -117,7 +119,7 @@ class PressureLinealChart @JvmOverloads constructor(
             if (set == null) {
                 set = createSetLineChart()
                 lineData.addDataSet(set)
-                for (i in 1..359) {
+                for (i in 1..1079) {
                     lineData.addEntry(Entry(set?.entryCount?.toFloat() ?: 0f, 0f), 0)
                 }
             }
@@ -127,7 +129,7 @@ class PressureLinealChart @JvmOverloads constructor(
             // let the chart know it's data has changed
             chart?.notifyDataSetChanged()
             // limit the number of visible entries
-            chart?.setVisibleXRangeMaximum(360f)
+            chart?.setVisibleXRangeMaximum(1080f)
             // move to the latest entry
             chart?.moveViewToX(lineData.entryCount.toFloat())
         }
@@ -139,12 +141,26 @@ class PressureLinealChart @JvmOverloads constructor(
         set.axisDependency = YAxis.AxisDependency.LEFT
         set.lineWidth = 2f
         set.isHighlightEnabled = false
-        set.color = ContextCompat.getColor(context, R.color.teal_700)
+        set.color = ContextCompat.getColor(context, color)
         set.setDrawValues(false)
         set.setDrawCircles(false)
         return set
     }
 
+    fun setColor(lineIndex: Int): Int{
+        return colorsList[lineIndex]
+    }
 
+    val colorsList = listOf(
+        R.color.teal_700,
+        R.color.green,
+        R.color.teal_200,
+        R.color.magenta,
+        R.color.red,
+        R.color.yellow,
+        R.color.purple,
+        R.color.black,
+        R.color.black,
+    )
 
 }
