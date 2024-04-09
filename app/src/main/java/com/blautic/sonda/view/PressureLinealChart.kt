@@ -117,7 +117,7 @@ class PressureLinealChart @JvmOverloads constructor(
             if (set == null) {
                 set = createSetLineChart()
                 lineData.addDataSet(set)
-                for (i in 1..359) {
+                for (i in 1..1079) {
                     lineData.addEntry(Entry(set?.entryCount?.toFloat() ?: 0f, 0f), 0)
                 }
             }
@@ -127,7 +127,7 @@ class PressureLinealChart @JvmOverloads constructor(
             // let the chart know it's data has changed
             chart?.notifyDataSetChanged()
             // limit the number of visible entries
-            chart?.setVisibleXRangeMaximum(360f)
+            chart?.setVisibleXRangeMaximum(1080f)
             // move to the latest entry
             chart?.moveViewToX(lineData.entryCount.toFloat())
         }

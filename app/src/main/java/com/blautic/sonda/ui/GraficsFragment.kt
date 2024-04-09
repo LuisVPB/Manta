@@ -99,6 +99,23 @@ class GraficsFragment : Fragment() {
             }
         }
 
+        lifecycleScope.launch {
+            viewModel.velPosFlow().collect() {
+                Log.d("posicion_sonda",
+                    "${(it?.get(3))} / ${(it?.get(4))} / ${(it?.get(5))}")
+                it?.let {
+                    binding.run {
+                        svdisplacement.isClickable = false
+                        svdisplacement.max = 100
+                        svdisplacement.min = -100
+                        svdisplacement.progress = (it[4]*100).toInt()
+
+
+                    }
+                }
+            }
+        }
+
 
     }
 }

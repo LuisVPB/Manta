@@ -118,20 +118,20 @@ class PresureMultipleLinealChart @JvmOverloads constructor(
                 var set: ILineDataSet? = lineData.getDataSetByIndex(index) //recupera la linea de datos concreta de la coección de lineas si existe, si no nulo
                 if (set == null) { //si es nulo porque se acaba de iniciar el gráfico, se crea una lnea de datos nueva para este sensor de presión
                     set = createSetLineChart(index)
-                    lineData.addDataSet(set) //se añade a la colección la linea recien creada
-                    for (i in 1..359) {
-                        lineData.addEntry(Entry(set?.entryCount?.toFloat() ?: 0f, 0f), index) //se rellena de ceros para cubrir el ancho de gráfica hasta el dato actual que entra al final
+                    lineData.addDataSet(set) //se añade a la colección de lineas de datos la linea recien creada
+                    for (i in 1..1079) {
+                        lineData.addEntry(Entry(set?.entryCount?.toFloat() ?: 0f, 0f), index) //la linea de datos añadida se rellena de ceros para cubrir el ancho de gráfica hasta el dato actual que entra al final
                     }
                 }
 
-                lineData.addEntry(Entry(set?.entryCount?.toFloat() ?: 0f, entry?: 0f), index)
+                lineData.addEntry(Entry(set?.entryCount?.toFloat() ?: 0f, entry?: 0f), index) //dato actual que entra al final
             }
 
             lineData.notifyDataChanged() //estaa linea podría ir dentro del bucle anterior
             // let the chart know it's data has changed
             chart?.notifyDataSetChanged()
             // limit the number of visible entries
-            chart?.setVisibleXRangeMaximum(360f)
+            chart?.setVisibleXRangeMaximum(1080f)
             // move to the latest entry
             chart?.moveViewToX(lineData.entryCount.toFloat())
         }

@@ -61,6 +61,7 @@ class MainViewModel(
     fun presionFlow() = bleManager.presionFlow
     fun mpuFlow() = bleManager.mpuFlow
     fun anglesFlow() = bleManager.anglesFlow
+    fun velPosFlow() = bleManager.valoresIntegracion
 
     fun connect(mac: String) {
         bleManager.connectToDevice(mac)
