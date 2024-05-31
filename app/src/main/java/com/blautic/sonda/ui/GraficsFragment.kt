@@ -109,9 +109,8 @@ class GraficsFragment : Fragment() {
                     binding.run {
                         svdisplacement.isClickable = false
                         svdisplacement.max = 100
-                        svdisplacement.min = 0
-                        svdisplacement.progress = (it[4]*200).toInt()
-
+                        svdisplacement.min = -100
+                        svdisplacement.progress = (it[4]*100).toInt()
 
 
                     }
