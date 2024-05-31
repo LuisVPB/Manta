@@ -56,6 +56,7 @@ class GraficsFragment : Fragment() {
 
         // configurar gráficos
         binding.apply {
+
             pmlcSensores.apply {
                 setLabelSensorName(" Sensor múltiple de presión")
                 setMaxScale(100)
@@ -70,6 +71,7 @@ class GraficsFragment : Fragment() {
                 plcSensor6,
                 plcSensor7
             ).forEachIndexed { index, pressureLinealChart ->
+
                 pressureLinealChart.apply {
                     setLabelSensorName(" Sensor de presión-${index + 1}")
                     setColor(index)
@@ -78,7 +80,6 @@ class GraficsFragment : Fragment() {
                 }
 
             }
-
         }
 
         lifecycleScope.launch {
@@ -89,13 +90,13 @@ class GraficsFragment : Fragment() {
 
                         pmlcSensores.addEntryLineChart(it)
 
-                        plcSensor1.addEntryLineChart(it.get(0) ?:0f)
-                        plcSensor2.addEntryLineChart(it.get(1) ?:0f)
-                        plcSensor3.addEntryLineChart(it.get(2) ?:0f)
-                        plcSensor4.addEntryLineChart(it.get(3) ?:0f)
-                        plcSensor5.addEntryLineChart(it.get(4) ?:0f)
-                        plcSensor6.addEntryLineChart(it.get(5) ?:0f)
-                        plcSensor7.addEntryLineChart(it.get(6) ?:0f)
+                        plcSensor1.addEntryLineChart(it[0] ?:0f)
+                        plcSensor2.addEntryLineChart(it[1] ?:0f)
+                        plcSensor3.addEntryLineChart(it[2] ?:0f)
+                        plcSensor4.addEntryLineChart(it[3] ?:0f)
+                        plcSensor5.addEntryLineChart(it[4] ?:0f)
+                        plcSensor6.addEntryLineChart(it[5] ?:0f)
+                        plcSensor7.addEntryLineChart(it[6] ?:0f)
                     }
                 }
             }
@@ -109,9 +110,8 @@ class GraficsFragment : Fragment() {
                     binding.run {
                         svdisplacement.isClickable = false
                         svdisplacement.max = 100
-                        svdisplacement.min = 0
-                        svdisplacement.progress = (it[4]*200).toInt()
-
+                        svdisplacement.min = -100
+                        svdisplacement.progress = (it[4]*100).toInt()
 
 
                     }

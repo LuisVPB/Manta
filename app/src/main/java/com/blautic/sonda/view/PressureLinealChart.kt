@@ -147,11 +147,11 @@ class PressureLinealChart @JvmOverloads constructor(
         return set
     }
 
-    fun setColor(lineIndex: Int): Int{
-        return colorsList[lineIndex]
+    fun setColor(lineIndex: Int){
+        color = colorsList[lineIndex]
     }
 
-    val colorsList = listOf(
+    private val colorsList = listOf(
         R.color.teal_700,
         R.color.green,
         R.color.teal_200,
