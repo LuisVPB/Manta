@@ -14,13 +14,42 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
-import java.util.*
+import uk.me.berndporr.iirj.Butterworth
+import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 class BleManager(private var context: Context) {
 
+    private var gravityLowPassFilterX: Butterworth? = null
+    private var gravityLowPassFilterY: Butterworth? = null
+    private var gravityLowPassFilterZ: Butterworth? = null
+
+    init {
+        setGravityFilter(20.0, 0.5) //0.5 o 1
+    }
+
+    private val h: Double = 0.025
+
+    private var prevAccX: Double = 0.0
+    private var prevAccY: Double = 0.0
+    private var prevAccZ: Double = 0.0
+
+    private var prevVelX: Double = 0.0
+    private var prevVelY: Double = 0.0
+    private var prevVelZ: Double = 0.0
+
+    private var velMedX: Double = 0.0
+    private var velMedY: Double = 0.0
+    private var velMedZ: Double = 0.0
+
+    private var posMedX: Double = 0.0
+    private var posMedY: Double = 0.0
+    private var posMedZ: Double = 0.0
+
+
     private val accelerometer = Mpu()
 
-    private val bluetoothAdapter: BluetoothAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
         val bluetoothManager =
             context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothManager.adapter
@@ -30,7 +59,7 @@ class BleManager(private var context: Context) {
         ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
 
     private val bleScanner by lazy {
-        bluetoothAdapter.bluetoothLeScanner
+        bluetoothAdapter?.bluetoothLeScanner
     }
 
     //SCAN RESULT
@@ -50,14 +79,19 @@ class BleManager(private var context: Context) {
     val presionFlow get() = _presionFlow.asStateFlow()
 
     // Valores de MPU
-    private val _mpuFlow = MutableStateFlow<MutableList<Int?>?>(null)
+    private val _mpuFlow = MutableStateFlow<MutableList<Float?>?>(null) // MutableStateFlow<MutableList<Int?>?>(null)
     val mpuFlow get() = _mpuFlow.asStateFlow()
 
     // Ángulos asociados al MPU
     private val _anglesFlow = MutableStateFlow<MutableList<Float?>?>(null)
     val anglesFlow get() = _anglesFlow.asStateFlow()
 
-    private var isConnected = false
+    // Velocidad/posición asociada al MPU
+    private val _valoresIntegracion:  MutableStateFlow<Array<Double>> = MutableStateFlow(emptyArray())
+    val valoresIntegracion
+        get() = _valoresIntegracion.asStateFlow()
+
+    var isConnected = false
     private var isConnecting = false
 
     private var gattCharacteristic: BluetoothGatt? = null
@@ -84,15 +118,27 @@ class BleManager(private var context: Context) {
     }
 
     /*
-    * Conecta Con un dispositivo de electroestimulación pasándole la dirección MAC
+    * Conecta Con el dispositivo pasándole la dirección MAC
     */
     @SuppressLint("MissingPermission")
     fun connectToDevice(address: String) {
-        val device: BluetoothDevice? = bluetoothAdapter.getRemoteDevice(address)
+        val device: BluetoothDevice? = bluetoothAdapter?.getRemoteDevice(address)
         if (bleAdapterIsEnable() && !isConnected && !isConnecting) {
             isConnecting = true
+            _connectionStateFlow.value = ConnectionState.CONNECTING
             gattCharacteristic =
-                device?.connectGatt(context, false, gattCallBack, BluetoothDevice.TRANSPORT_LE)
+                device?.connectGatt(context, true, gattCallBack, BluetoothDevice.TRANSPORT_LE)
+        } else if (!bleAdapterIsEnable()){
+            /*
+            // Ensures Bluetooth is available on the device and it is enabled. If not,
+            // displays a dialog requesting user permission to enable Bluetooth.
+            bluetoothAdapter?.takeIf {
+                !it.isEnabled }?.apply {
+                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+            }
+
+             */
         }
     }
 
@@ -110,15 +156,57 @@ class BleManager(private var context: Context) {
         @SuppressLint("MissingPermission")
 
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-            Log.w("BluetoothGattCallback", "onConnectionStateChange status: $status")
-            Log.w("BluetoothGattCallback", "onConnectionStateChange newState: $newState")
 
-            super.onConnectionStateChange(gatt, status, newState)
+            Log.i("BluetoothGattCallback", "onConnectionStateChange status: $status")
+            Log.i("BluetoothGattCallback", "onConnectionStateChange newState: $newState")
 
             val deviceAddress = gatt?.device?.address
             _scanResultFlow.value = null
 
+            when (newState) {
+                BluetoothProfile.STATE_CONNECTED -> {
+
+                    Timber.tag("BluetoothGattCallback")
+                        .w("Successfully connected to %s", deviceAddress)
+
+                    _connectionStateFlow.value = ConnectionState.CONNECTED
+
+                    isConnecting = false
+                    isConnected = true
+                    gatt?.discoverServices()
+                }
+                BluetoothProfile.STATE_DISCONNECTED -> {
+                    Timber.tag("BluetoothGattCallback")
+                        .w("Successfully disconnected from %s", deviceAddress)
+
+                    _connectionStateFlow.value = ConnectionState.DISCONNECTED
+
+                    isConnected = false
+                    isConnecting = false
+                    gatt?.close()
+                }
+                BluetoothProfile.STATE_CONNECTING -> {
+                    Timber.tag("BluetoothGattCallback")
+                        .w("Successfully CONNECTING to %s", deviceAddress)
+
+                    _connectionStateFlow.value = ConnectionState.CONNECTING
+
+                    isConnected = false
+                    isConnecting = true
+                }
+                BluetoothProfile.STATE_DISCONNECTING -> {
+                    Timber.tag("BluetoothGattCallback")
+                        .w("Successfully DISCONNECTING to %s", deviceAddress)
+
+                    _connectionStateFlow.value = ConnectionState.DISCONNECTING
+
+                    isConnected = false
+                    isConnecting = false
+                }
+            }
+
             if (status == BluetoothGatt.GATT_SUCCESS) {
+                /*
                 when (newState) {
                     BluetoothProfile.STATE_CONNECTED -> {
 
@@ -143,7 +231,7 @@ class BleManager(private var context: Context) {
                     }
                     BluetoothProfile.STATE_CONNECTING -> {
                         Timber.tag("BluetoothGattCallback")
-                            .w("Successfully STATE_DISCONNECTED to %s", deviceAddress)
+                            .w("Successfully CONNECTING to %s", deviceAddress)
 
                         _connectionStateFlow.value = ConnectionState.CONNECTING
 
@@ -152,7 +240,7 @@ class BleManager(private var context: Context) {
                     }
                     BluetoothProfile.STATE_DISCONNECTING -> {
                         Timber.tag("BluetoothGattCallback")
-                            .w("Successfully STATE_DISCONNECTING to %s", deviceAddress)
+                            .w("Successfully DISCONNECTING to %s", deviceAddress)
 
                         _connectionStateFlow.value = ConnectionState.DISCONNECTING
 
@@ -160,6 +248,9 @@ class BleManager(private var context: Context) {
                         isConnecting = false
                     }
                 }
+
+                 */
+
             } else {
                 Timber.tag("BluetoothGattCallback").w("%s! Disconnecting...",
                     "Error " + status + " encountered for " + deviceAddress)
@@ -179,9 +270,9 @@ class BleManager(private var context: Context) {
         ) {
             super.onCharacteristicChanged(gatt, characteristic)
 
-            ////////////////
+
             val parse = BleBytesParser(characteristic?.value)
-            /////////////////////////////
+
 
             when (characteristic?.uuid) {
 
@@ -239,11 +330,11 @@ class BleManager(private var context: Context) {
                 }
 
                 BleUUID.UUID_MPU_CHARACTERISTIC -> {
-                    Log.d("NOTIFICATION ${characteristic?.uuid}",
+                    Log.d("MPU_NOTIFICATION ${characteristic?.uuid}",
                         "mpu = ${characteristic?.value.contentToString()}")
 
                     characteristic?.let {
-                        val valoresBytes: ByteArray = ByteArray(6)
+                        val valoresBytes: ByteArray = ByteArray(12)
                         val mpuIntegers: MutableList<Int?> = mutableListOf()
                         val anglesIntegers: MutableList<Float?> = mutableListOf()
 
@@ -259,11 +350,9 @@ class BleManager(private var context: Context) {
 
                         Log.d("NOTIFICATION mpu", valoresBytes.toString())
 
-                        // Actualizar la variable entera con el valor combinado
-                        _mpuFlow.value = mpuIntegers
-
                         val parse = BleBytesParser(it.value)
                         accelerometer.setData(parse)
+
                         Log.d("angulos_todos","angles: xy: ${Integer.toHexString(accelerometer.angles.xy.toInt())} ,xz: ${Integer.toHexString(accelerometer.angles.xz.toInt())} , zy: ${Integer.toHexString(accelerometer.angles.zy.toInt()) }")
                         anglesIntegers.apply {
                             add(accelerometer.angles.xz)
@@ -275,6 +364,36 @@ class BleManager(private var context: Context) {
 
                         Log.d("NOTIFICATION ${characteristic?.uuid}",
                             "angles = ${anglesIntegers}")
+
+                        // Actualizar la variable entera con el valor combinado
+                        //_mpuFlow.value = mpuIntegers
+                        //////////////////
+                        val mpuValues: MutableList<Float?> = mutableListOf()
+                        val accWithoutGravity = filter(
+                            doubleArrayOf(
+                                accelerometer.accX.toDouble(),
+                                accelerometer.accY.toDouble(),
+                                accelerometer.accZ.toDouble()
+                            )
+                        )
+                        mpuValues.apply {
+                            add(accelerometer.accX)
+                            add(accelerometer.accY)
+                            add(accelerometer.accZ)
+                            add(accelerometer.gyrX)
+                            add(accelerometer.gyrY)
+                            add(accelerometer.gyrZ)
+                            add(accelerometer.angles.xz)
+                            add(accelerometer.angles.zy)
+                            add(accelerometer.angles.xy)
+                        }
+                        _mpuFlow.value = mpuValues
+
+                        integrate(
+                            accWithoutGravity.get(0),
+                            accWithoutGravity.get(1),
+                            accWithoutGravity.get(2)
+                        )
 
                     }
 
@@ -299,16 +418,6 @@ class BleManager(private var context: Context) {
             enableNotifications(gatt?.getService(BleUUID.UUID_SERVICE)
                 ?.getCharacteristic(BleUUID.UUID_MPU_CHARACTERISTIC)!!, true)
 
-            ////////////////////////
-
-          /*  enableNotifications(gattCharacteristic?.getService(BleUUID.UUID_SERVICE)
-                ?.getCharacteristic(BleUUID.UUID_SYSSTATE)!!, true)
-
-            enableNotifications(gattCharacteristic?.getService(BleUUID.UUID_SERVICE)
-                ?.getCharacteristic(BleUUID.UUID_BATT)!!, true)
-
-            enableNotifications(gattCharacteristic?.getService(BleUUID.UUID_SERVICE)
-                ?.getCharacteristic(BleUUID.UUID_STATUS)!!, true)*/
 
             isConnected = true
 
@@ -342,24 +451,24 @@ class BleManager(private var context: Context) {
     }
 
     private fun normalization(combinedValue: Int): Float {
-        Log.d("NOTIFICATION", "val presion convinado $combinedValue")
+        Log.d("NOTIFICATION", "val presion combinado $combinedValue")
         val min = 1950
-        val result: Float = ((min-combinedValue)/min.toFloat()) //Porcentaje = ((1950 - Valor) / 1950) * 100
+        val result: Float = ((min-combinedValue)/min.toFloat())
         return  if(result >=0) result * 100 else 0F
     }
 
     @SuppressLint("MissingPermission")
     fun startBleScan() {
-        bleScanner.startScan(null, scanSettings, scanCallback)
+        bleScanner?.startScan(null, scanSettings, scanCallback)
     }
 
     @SuppressLint("MissingPermission")
     fun stopBleScan() {
-        bleScanner.stopScan(scanCallback)
+        bleScanner?.stopScan(scanCallback)
     }
 
     private fun bleAdapterIsEnable(): Boolean {
-        return bluetoothAdapter.isEnabled
+        return bluetoothAdapter?.isEnabled ?: false
     }
 
     @SuppressLint("MissingPermission")
@@ -370,8 +479,6 @@ class BleManager(private var context: Context) {
     private fun getPeriodo(frecuencia: Double): Double {
         return 1 / frecuencia
     }
-
-    ////////////////////////////////////////////////////////////
 
     private var lasAdcBat = 0
     private val avgBat: MutableList<Int> = ArrayList()
@@ -403,6 +510,90 @@ class BleManager(private var context: Context) {
             avgBat.add(bat)
             battery = avgBat.average().toInt()
         }
+    }
+
+
+    private fun integrate(accX: Double, accY: Double, accZ: Double){
+        Log.d(
+            "integrate",
+            "acc: $accX / $accY / $accZ "
+        )
+
+        if (abs(accX-prevAccX) < 0.001 || accX<0.01){
+            prevAccX = 0.0
+            prevVelX = 0.0
+            posMedX = 0.0
+        } else {
+            // aprox de paso de integracion por método de trapecios simples:
+            // primera integral
+            velMedX += (h * (prevAccX + accX)/2.0)
+            prevAccX = accX
+
+            // segunda integral
+            posMedX += (h * (prevVelX + velMedX)/2.0)
+            prevVelX = velMedX
+        }
+        if (abs(accX-prevAccY) < 0.001 || accY<0.01){
+            prevAccY = 0.0
+            prevVelY = 0.0
+            posMedY = 0.0
+        }else{
+            velMedY += (h * (prevAccY + accY)/2.0)
+            prevAccY = accY
+
+            posMedY += (h * (prevVelY + velMedY)/2.0)
+            prevVelY = velMedY
+        }
+        if (abs(accZ-prevAccZ) < 0.001 || accZ<0.01){
+            prevAccZ = 0.0
+            prevVelZ = 0.0
+            posMedZ = 0.0
+        }else{
+            velMedZ += (h * (prevAccZ + accZ)/2.0)
+            prevAccZ = accZ
+
+            posMedZ += (h * (prevVelZ + velMedZ)/2.0)
+            prevVelZ = velMedZ
+        }
+
+        Log.d(
+            "integrate",
+            "1ªintgr: $velMedX / $velMedY / $velMedZ "
+        )
+
+        Log.d("integrate",
+            "2ªintgr: $posMedX / $posMedY / $posMedZ"
+        )
+        _valoresIntegracion.value = arrayOf(velMedX, velMedY, velMedZ, posMedX, posMedY, posMedZ)
+    }
+
+    fun setGravityFilter(sampleRate: Double, cutoffFrequency: Double) {
+        // Diseñar los filtros paso bajo para cada eje
+        gravityLowPassFilterX = Butterworth().apply {
+            lowPass(2, sampleRate, cutoffFrequency)
+        }
+
+        gravityLowPassFilterY = Butterworth().apply {
+            lowPass(2, sampleRate, cutoffFrequency)
+        }
+
+        gravityLowPassFilterZ = Butterworth().apply {
+            lowPass(2, sampleRate, cutoffFrequency)
+        }
+    }
+
+    fun filter(acceleration: DoubleArray): DoubleArray {
+
+        // Aplica los filtros a las lecturas de aceleración en cada eje
+        val xFiltered: Double = gravityLowPassFilterX?.filter(acceleration[0]) ?: 0.0
+        val yFiltered: Double = gravityLowPassFilterY?.filter(acceleration[1]) ?: 0.0
+        val zFiltered: Double = gravityLowPassFilterZ?.filter(acceleration[2]) ?: 0.0
+
+        // Resta la componente de la gravedad de las lecturas originales
+        acceleration[0] -= xFiltered
+        acceleration[1] -= yFiltered
+        acceleration[2] -= zFiltered
+        return acceleration
     }
 
     companion object {

@@ -12,7 +12,6 @@ object BleUUID {
 
     val UUID_MPU_CHARACTERISTIC = UUID.fromString("0000ff3b-0000-1000-8000-00805f9b34fb")
 
-    /////////////////////////////////////////////////////////////////////////////////
 
     val UUID_SYSSTATE = UUID.fromString("0000ff32-0000-1000-8000-00805f9b34fb")
     val UUID_JOIN = UUID.fromString("0000fff7-0000-1000-8000-00805f9b34fb")

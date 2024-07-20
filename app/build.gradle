@@ -12,8 +12,8 @@ android {
         applicationId "com.blautic.sonda"
         minSdk 26
         targetSdk 33
-        versionCode 1
-        versionName "1.0a"
+        versionCode 2
+        versionName "1.0d"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -59,7 +59,7 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -67,4 +67,10 @@ dependencies {
 
     // Para utiles:
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+    implementation 'org.apache.poi:poi:4.1.2'
+    implementation 'org.apache.poi:poi-ooxml:4.1.2'
+    implementation 'javax.xml.stream:stax-api:1.0-2'
+
+    //Charts:
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }

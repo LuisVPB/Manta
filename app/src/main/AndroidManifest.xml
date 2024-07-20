@@ -22,8 +22,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sonda"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_launcher_foreground"/>
         <activity
-            android:name="com.blautic.sonda.MainActivity"
+            android:name="com.blautic.sonda.ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
