@@ -1,37 +1,21 @@
-package com.blautic.sonda.ui
+package com.blautic.gamifyAlfombra.ui
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
-import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
-import com.blautic.sonda.R
-import com.blautic.sonda.databinding.ActivityMainBinding
-import com.blautic.sonda.viewModel.MainViewModel
-import com.blautic.sonda.viewModel.MainViewModelFactory
-import com.diegulog.ble.gatt.ConnectionState
-import com.google.android.material.progressindicator.CircularProgressIndicator
-import kotlinx.coroutines.launch
-import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
+import com.blautic.gamifyAlfombra.R
+import com.blautic.gamifyAlfombra.databinding.ActivityMainBinding
+import com.blautic.gamifyAlfombra.viewModel.MainViewModel
+import com.blautic.gamifyAlfombra.viewModel.MainViewModelFactory
 
 
 class MainActivity : AppCompatActivity() {

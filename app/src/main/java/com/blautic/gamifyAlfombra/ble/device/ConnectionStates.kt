@@ -1,4 +1,4 @@
-package com.blautic.sonda.ble.device
+package com.blautic.gamifyAlfombra.ble.device
 
 enum class ConnectionStates(var label: String) {
     STATE_CONNECTED("Device Connected"), STATE_CONNECTING(

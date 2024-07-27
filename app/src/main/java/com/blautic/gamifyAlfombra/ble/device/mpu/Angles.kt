@@ -1,4 +1,4 @@
-package com.blautic.sonda.ble.device.mpu
+package com.blautic.gamifyAlfombra.ble.device.mpu
 
 import android.util.Log
 import uk.me.berndporr.iirj.Butterworth

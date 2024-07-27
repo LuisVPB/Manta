@@ -1,4 +1,4 @@
-package com.blautic.sonda.ble.device.mpu
+package com.blautic.gamifyAlfombra.ble.device.mpu
 
 /**
  * This class describes the Gyroscope scale, send the base frame with GyroScale configured with one of the following values:

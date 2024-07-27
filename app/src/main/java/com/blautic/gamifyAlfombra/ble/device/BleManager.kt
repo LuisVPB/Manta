@@ -1,4 +1,4 @@
-package com.blautic.sonda.ble.device
+package com.blautic.gamifyAlfombra.ble.device
 
 import android.annotation.SuppressLint
 import android.bluetooth.*
@@ -7,7 +7,7 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.util.Log
-import com.blautic.sonda.ble.device.mpu.Mpu
+import com.blautic.gamifyAlfombra.ble.device.mpu.Mpu
 import com.diegulog.ble.BleBytesParser
 import com.diegulog.ble.gatt.ConnectionState
 import kotlinx.coroutines.flow.MutableStateFlow

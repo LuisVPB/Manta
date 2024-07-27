@@ -1,4 +1,4 @@
-package com.blautic.sonda.ble.device.mpu
+package com.blautic.gamifyAlfombra.ble.device.mpu
 
 /**
  * This class describes the Acc scale, Send the base frame with AccScale configured with one of the following values::

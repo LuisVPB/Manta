@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.blautic.sonda'
+    namespace 'com.blautic.gamifyAlfombra'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.blautic.sonda"
+        applicationId "com.blautic.gamifyAlfombra"
         minSdk 26
         targetSdk 33
         versionCode 2

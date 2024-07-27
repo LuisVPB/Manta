@@ -1,4 +1,4 @@
-package com.blautic.sonda.ui
+package com.blautic.gamifyAlfombra.ui
 
 import android.content.Context
 import android.graphics.Color
@@ -18,13 +18,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
-import com.blautic.sonda.R
-import com.blautic.sonda.databinding.FragmentMainBinding
-import com.blautic.sonda.viewModel.MainViewModel
-import com.blautic.sonda.viewModel.MainViewModelFactory
+import com.blautic.gamifyAlfombra.R
+import com.blautic.gamifyAlfombra.databinding.FragmentMainBinding
+import com.blautic.gamifyAlfombra.viewModel.MainViewModel
+import com.blautic.gamifyAlfombra.viewModel.MainViewModelFactory
 import com.diegulog.ble.gatt.ConnectionState
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.launch

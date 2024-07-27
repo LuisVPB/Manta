@@ -1,10 +1,9 @@
-package com.blautic.sonda.ble.device.mpu
+package com.blautic.gamifyAlfombra.ble.device.mpu
 
 import android.os.Parcelable
 
 import com.diegulog.ble.BleBytesParser
 import com.diegulog.ble.BleBytesParser.FORMAT_SINT16
-import com.diegulog.ble.BleBytesParser.FORMAT_UINT16
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

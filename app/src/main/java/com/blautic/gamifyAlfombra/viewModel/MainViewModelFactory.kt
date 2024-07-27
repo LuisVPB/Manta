@@ -1,4 +1,4 @@
-package com.blautic.sonda.viewModel
+package com.blautic.gamifyAlfombra.viewModel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel

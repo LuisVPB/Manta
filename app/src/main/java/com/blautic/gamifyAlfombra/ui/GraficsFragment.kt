@@ -1,4 +1,4 @@
-package com.blautic.sonda.ui
+package com.blautic.gamifyAlfombra.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -8,12 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.blautic.sonda.databinding.FragmentGraficsBinding
-import com.blautic.sonda.viewModel.MainViewModel
-import com.blautic.sonda.viewModel.MainViewModelFactory
-import kotlinx.coroutines.flow.map
+import com.blautic.gamifyAlfombra.databinding.FragmentGraficsBinding
+import com.blautic.gamifyAlfombra.viewModel.MainViewModel
+import com.blautic.gamifyAlfombra.viewModel.MainViewModelFactory
 import kotlinx.coroutines.launch
-import kotlin.math.sign
 
 class GraficsFragment : Fragment() {
 

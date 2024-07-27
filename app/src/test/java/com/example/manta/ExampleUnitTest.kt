@@ -1,4 +1,4 @@
-package com.blautic.sonda
+package com.blautic.gamifyAlfombra
 
 import org.junit.Test
 

@@ -1,11 +1,8 @@
-package com.blautic.sonda.utils
+package com.blautic.gamifyAlfombra.utils
 
-import android.app.ProgressDialog
 import android.content.Context
-import android.net.Uri
 import android.widget.Toast
 import kotlinx.datetime.*
-import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException

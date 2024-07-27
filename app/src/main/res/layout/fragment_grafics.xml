@@ -52,7 +52,7 @@
         android:padding="5dp"
         android:layout_margin="5dp">
 
-        <com.blautic.sonda.view.PresureMultipleLinealChart
+        <com.blautic.gamifyAlfombra.view.PresureMultipleLinealChart
             android:id="@+id/pmlcSensores"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
@@ -93,42 +93,42 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.blautic.sonda.view.PressureLinealChart
+            <com.blautic.gamifyAlfombra.view.PressureLinealChart
                 android:id="@+id/plcSensor1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <com.blautic.sonda.view.PressureLinealChart
+            <com.blautic.gamifyAlfombra.view.PressureLinealChart
                 android:id="@+id/plcSensor2"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:layout_marginVertical="5dp" />
 
-            <com.blautic.sonda.view.PressureLinealChart
+            <com.blautic.gamifyAlfombra.view.PressureLinealChart
                 android:id="@+id/plcSensor3"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:layout_marginVertical="5dp" />
 
-            <com.blautic.sonda.view.PressureLinealChart
+            <com.blautic.gamifyAlfombra.view.PressureLinealChart
                 android:id="@+id/plcSensor4"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:layout_marginVertical="5dp" />
 
-            <com.blautic.sonda.view.PressureLinealChart
+            <com.blautic.gamifyAlfombra.view.PressureLinealChart
                 android:id="@+id/plcSensor5"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:layout_marginVertical="5dp" />
 
-            <com.blautic.sonda.view.PressureLinealChart
+            <com.blautic.gamifyAlfombra.view.PressureLinealChart
                 android:id="@+id/plcSensor6"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:layout_marginVertical="5dp" />
 
-            <com.blautic.sonda.view.PressureLinealChart
+            <com.blautic.gamifyAlfombra.view.PressureLinealChart
                 android:id="@+id/plcSensor7"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"

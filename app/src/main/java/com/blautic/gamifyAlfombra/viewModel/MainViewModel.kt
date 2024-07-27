@@ -1,24 +1,21 @@
-package com.blautic.sonda.viewModel
+package com.blautic.gamifyAlfombra.viewModel
 
 
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.blautic.sonda.R
-import com.blautic.sonda.ble.device.BleManager
-import com.blautic.sonda.utils.ArrayToExcel
-import com.blautic.sonda.utils.Util
+import com.blautic.gamifyAlfombra.R
+import com.blautic.gamifyAlfombra.ble.device.BleManager
+import com.blautic.gamifyAlfombra.utils.ArrayToExcel
+import com.blautic.gamifyAlfombra.utils.Util
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
